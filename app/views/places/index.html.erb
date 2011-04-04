@@ -1,0 +1,29 @@
+<h1>大富豪大貧民</h1>
+
+<%= form_for @search_form, :url => places_path, :remote => true, 
+  :html => {:method => :get, :class => 'search_form'} do |f| %>
+  <%= f.search_field :q %>
+  <%= f.submit 'search' %>
+<% end %>
+
+<br />
+
+<table>
+  <thead>
+    <tr>
+      <th>Games Name</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id='places'>
+    <%= render @places %>
+  </tbody>
+</table>
+
+<div id="message"></div>
+
+<br />
+
+<%= link_to 'New Games', new_place_path %>
+

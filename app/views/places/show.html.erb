@@ -1,0 +1,131 @@
+<script type="text/javascript">
+  var exec = function(event) {
+    $("#message").append("<p>"+event.data+"</p>");
+  };
+  $(document).ready(function(){
+    var socket = new MyWebScoket(exec);
+    socket.start();
+  });
+  $(function(){
+    $("#btn").click(function(){
+      add_player("player1");
+      add_player("player2");
+      add_player("player3");
+      add_player("player4");
+      add_player("player5");
+      set_player_cards(0,[0,0,0,0,0,0,0,0,0,0]);
+      set_player_cards(1,[0,0,0,0,0,0,0,0]);
+      set_player_cards(2,[0,0,0,0,0,0,0,0,0,0]);
+      set_player_cards(3,[0,0,0,0,0,0,0]);
+      set_player_cards(4,[0]);
+      set_player_place_cards(0,"",[1,2,3,4]);
+      set_player_place_cards(1,"pass",[]);
+      set_player_place_cards(2,"rank 1",[]);
+      set_player_place_cards(3,"",[1]);
+      set_player_place_cards(4,"",[53]);
+    });
+  });
+
+  function set_game_no(value){
+    $("#game_no").text(value);
+  };
+
+  function set_place_player(value){
+    $("#place_player").text(value);
+  };
+
+  function set_place_info(value){
+    $("#place_info").text(value);
+  };
+
+  function set_place(list){
+    var cards = $("#place_cards");
+    cards.children().remove();
+    $.each(list, function(i){
+      cards.append("<li><img src='/images/cards/" + list[i] + ".png'/></li>");
+    });
+  };
+
+  function add_player(name){
+    var player = $("<div/>").addClass("player");
+    var player_name = $("<div class='player_name'><span>" + name + "</span></div>");
+    var player_place_cards = $("<div class='player_place_cards'><span>init</span></div>");
+    var player_cards = $("<div class='player_cards'><ul></ul></div>");
+    player.append(player_name).append(player_place_cards).append(player_cards);
+    var li = $("<li/>").append(player);
+    $("#players").append(li);
+  };
+
+  function set_player_cards(id, list){
+    var player_cards = $(".player").eq(id).children(".player_cards").children("ul");
+    player_cards.children().remove();
+    $.each(list, function(i){
+      player_cards.append("<li><img src='/images/cards/" + list[i] + ".png'/></li>");
+    });
+  };
+
+  function set_player_place_cards(id, info, list){
+    var player_place_cards = $(".player").eq(id).children(".player_place_cards");
+    player_place_cards.children().remove();
+    if(info != ""){
+      player_place_cards.append("<span>" + info + "</span>");
+    }else{
+      var cards = $("<ul/>"); 
+      $.each(list, function(i){
+        cards.append("<li><img src='/images/cards/" + list[i] + ".png'/></li>");
+      });
+      player_place_cards.append(cards);
+    }
+  };
+</script>
+
+<p id="notice"><%= notice %></p>
+<p>
+  <b><%= @place.title %></b>
+</p>
+<input type="button" id="btn" value="test" />
+<hr/>
+<div class='main'>
+  <div class='info'>
+    <div class='game'>
+      <div class='game_title'>
+          <span>Game No</span>
+      </div>
+      <div class='game_no'>
+          <span id='game_no'>1</span>
+      </div>
+    </div>
+  </div>
+  <div class='info'>
+      <div class='info_menu'>
+        <div>
+            <span>Place Player:</span>
+            <span id="place_player">player1</span>
+        </div>
+        <div>
+            <span>Place Info:</span>
+            <span id="place_info">Nomal</span>
+        </div>
+      </div>
+  </div>
+  <div class='place'>
+    <ul id='place_cards'>
+      <li><img src='/images/cards/1.png'/></li>
+      <li><img src='/images/cards/2.png'/></li>
+      <li><img src='/images/cards/3.png'/></li>
+      <li><img src='/images/cards/4.png'/></li>
+    </ul>
+  </div>
+  <div class='players'>
+    <ul id='players'>
+    </ul>
+  </div>
+</div>
+<hr/>
+<% if @place.players.length < 5  %>
+  <%= render "players/form" %>
+<% end %>
+
+<%= link_to 'Edit', edit_place_path(@place) %> |
+<%= link_to 'Back', places_path %>
+
