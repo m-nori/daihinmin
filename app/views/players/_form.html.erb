@@ -1,14 +1,6 @@
 <%= form_for [@place, @place.players.build] do |f| %>
   <%= f.error_messages %>
   <div class="field">
-    <%= f.label :name, 'Who are you?' %><br />
-    <%= f.text_field :name %>
-  </div>
-  <div class="field">
-    <%= f.label :url, 'Your URL is?' %><br />
-    <%= f.text_field :url %>
-  </div>
-  <div class="field">
     <%= f.submit  %>
   </div>
 <% end %>
