@@ -1,7 +1,9 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the rake db:seed (or created alongside the db with db:setup).
-#
-# Examples:
-#
-#   cities = City.create([{ :name => 'Chicago' }, { :name => 'Copenhagen' }])
-#   Mayor.create(:name => 'Daley', :city => cities.first)
+
+1.upto(4) do |mark|
+  1.upto(13) do |number|
+    Card.create(:mark => mark, :number => number, :joker => false )
+  end
+end
+Card.create(:mark => 0, :number => 0, :joker => true )
+Card.create(:mark => 0, :number => 0, :joker => true )
+
