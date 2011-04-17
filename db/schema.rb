@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110410135654) do
+ActiveRecord::Schema.define(:version => 20110417130022) do
 
   create_table "cards", :force => true do |t|
     t.integer  "mark"
@@ -25,13 +25,26 @@ ActiveRecord::Schema.define(:version => 20110410135654) do
     t.integer  "no"
     t.integer  "status"
     t.string   "place_info"
-    t.string   "rank"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "place_cards", :force => true do |t|
+    t.integer  "turn_id"
+    t.integer  "card_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "places", :force => true do |t|
     t.string   "title"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "player_cards", :force => true do |t|
+    t.integer  "card_id"
+    t.integer  "player_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -43,11 +56,24 @@ ActiveRecord::Schema.define(:version => 20110410135654) do
     t.datetime "updated_at"
   end
 
+  create_table "ranks", :force => true do |t|
+    t.integer  "game_id"
+    t.integer  "player_id"
+    t.integer  "rank"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "turn_cards", :force => true do |t|
+    t.integer  "turn_id"
+    t.integer  "card_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "turns", :force => true do |t|
     t.integer  "game_id"
     t.integer  "no"
-    t.integer  "placer"
-    t.string   "cards"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
