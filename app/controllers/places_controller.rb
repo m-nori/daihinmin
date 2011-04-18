@@ -37,6 +37,7 @@ class PlacesController < ApplicationController
   # GET /places/1/edit
   def edit
     @place = Place.find(params[:id])
+    respond_with @place
   end
 
   # POST /places
@@ -83,5 +84,9 @@ class PlacesController < ApplicationController
       format.html { redirect_to(places_url) }
       format.xml  { head :ok }
     end
+  end
+
+  def start
+    @place = Place.find(params[:id])
   end
 end
