@@ -1,7 +1,7 @@
 Daihinmin::Application.routes.draw do
-  resources :places do
-    resources :players, :only => [:new, :create, :destroy]
-  end
+  root :to => 'places#index'
+  resources :users
+  resources :places
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

@@ -8,11 +8,7 @@
   });
   $(function(){
     $("#btn").click(function(){
-      add_player("player1");
-      add_player("player2");
-      add_player("player3");
-      add_player("player4");
-      add_player("player5");
+      set_place([1,2,3,4]);
       set_player_cards(0,[0,0,0,0,0,0,0,0,0,0]);
       set_player_cards(1,[0,0,0,0,0,0,0,0]);
       set_player_cards(2,[0,0,0,0,0,0,0,0,0,0]);
@@ -44,16 +40,6 @@
     $.each(list, function(i){
       cards.append("<li><img src='/images/cards/" + list[i] + ".png'/></li>");
     });
-  };
-
-  function add_player(name){
-    var player = $("<div/>").addClass("player");
-    var player_name = $("<div class='player_name'><span>" + name + "</span></div>");
-    var player_place_cards = $("<div class='player_place_cards'><span>init</span></div>");
-    var player_cards = $("<div class='player_cards'><ul></ul></div>");
-    player.append(player_name).append(player_place_cards).append(player_cards);
-    var li = $("<li/>").append(player);
-    $("#players").append(li);
   };
 
   function set_player_cards(id, list){
@@ -110,21 +96,31 @@
   </div>
   <div class='place'>
     <ul id='place_cards'>
-      <li><img src='/images/cards/1.png'/></li>
-      <li><img src='/images/cards/2.png'/></li>
-      <li><img src='/images/cards/3.png'/></li>
-      <li><img src='/images/cards/4.png'/></li>
     </ul>
   </div>
   <div class='players'>
     <ul id='players'>
+      <% @place.players.each do |player| %>
+        <li>
+          <div class="player">
+            <div class='player_name'>
+              <span>
+                <%= User.find(player.user_id).name %>
+              </span>
+            </div>
+            <div class='player_place_cards'>
+              <span>init</span>
+            </div>
+            <div class='player_cards'>
+              <ul/>
+            </div>
+          </div>
+        </li>
+      <% end %>
     </ul>
   </div>
 </div>
 <hr/>
-<% if @place.players.length < 5  %>
-  <%= render "players/form" %>
-<% end %>
 
 <%= link_to 'Edit', edit_place_path(@place) %> |
 <%= link_to 'Back', places_path %>

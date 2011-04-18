@@ -24,6 +24,9 @@ class PlacesController < ApplicationController
   # GET /places/new.xml
   def new
     @place = Place.new
+    5.times do
+      @place.players.build
+    end
 
     respond_to do |format|
       format.html # new.html.erb
@@ -39,6 +42,7 @@ class PlacesController < ApplicationController
   # POST /places
   # POST /places.xml
   def create
+    logger.debug "#{params}"
     @place = Place.new(params[:place])
     MyWebsocket.call(@place.title)
 
