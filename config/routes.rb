@@ -1,7 +1,7 @@
 Daihinmin::Application.routes.draw do
   root :to => 'places#index'
   resources :places do
-    post 'start', :on => :member
+    get 'start', :on => :member
   end
   resources :users
 
