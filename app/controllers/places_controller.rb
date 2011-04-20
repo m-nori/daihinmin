@@ -43,9 +43,7 @@ class PlacesController < ApplicationController
   # POST /places
   # POST /places.xml
   def create
-    logger.debug "#{params}"
     @place = Place.new(params[:place])
-    MyWebsocket.call(@place.title)
 
     respond_to do |format|
       if @place.save
@@ -88,5 +86,20 @@ class PlacesController < ApplicationController
 
   def start
     @place = Place.find(params[:id])
+    hands = CardUtiles.create_hand(@place.players.length)
+    @place.players.each_with_index do |player, i|
+      player.cards = hands[i]
+      player.save
+    end
+
+    respond_to do |format|
+      format.json  { render :json => 
+        @place.players.to_json(
+          :include => {:cards => {:only => [:id,:joker,:mark,:number]},
+            :user  => {:only => [:id,:name]}},
+          :only => [:id]
+        )
+      }
+    end
   end
 end
