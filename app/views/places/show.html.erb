@@ -1,4 +1,5 @@
 <script type="text/javascript">
+  var open = false;
   $(document).ready(function(){
     var socket = new MyWebScoket();
     socket.start();
@@ -6,7 +7,13 @@
   $(function(){
     $("#start").click(function(){
       $.getJSON("<%= start_place_path %>", function(json){
-        start(json);
+        set_players_card(json, false);
+      });
+    });
+    $("#open").click(function(){
+      open = !open;
+      $.getJSON("<%= open_place_path %>", function(json){
+        set_players_card(json, open);
       });
     });
   });
@@ -16,8 +23,6 @@
 <p>
   <b><%= @place.title %></b>
 </p>
-<button type="submit" id="start">start</button>
-<hr/>
 <div class='main'>
   <div class='info'>
     <div class='game'>
@@ -67,6 +72,10 @@
     </ul>
   </div>
 </div>
+<p>
+<button type="submit" id="start">start</button>
+<button type="submit" id="open">open</button>
+</p>
 <hr/>
 
 <%= link_to 'Edit', edit_place_path(@place) %> |

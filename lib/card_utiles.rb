@@ -5,6 +5,6 @@ class CardUtiles
     cards.each_slice(cards.size.quo(count).ceil) do |hand|
       hands << hand
     end
-    hands
+    hands.sort_by{rand}
   end
 end

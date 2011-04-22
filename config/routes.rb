@@ -2,6 +2,7 @@ Daihinmin::Application.routes.draw do
   root :to => 'places#index'
   resources :places do
     get 'start', :on => :member
+    get 'open', :on => :member
   end
   resources :users
 

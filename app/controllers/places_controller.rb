@@ -37,7 +37,10 @@ class PlacesController < ApplicationController
   # GET /places/1/edit
   def edit
     @place = Place.find(params[:id])
-    respond_with @place
+    respond_to do |format|
+      format.html # show.html.erb
+      format.xml  { render :xml => @place }
+    end
   end
 
   # POST /places
@@ -92,6 +95,19 @@ class PlacesController < ApplicationController
       player.save
     end
 
+    respond_to do |format|
+      format.json  { render :json => 
+        @place.players.to_json(
+          :include => {:cards => {:only => [:id,:joker,:mark,:number]},
+            :user  => {:only => [:id,:name]}},
+          :only => [:id]
+        )
+      }
+    end
+  end
+
+  def open
+    @place = Place.find(params[:id])
     respond_to do |format|
       format.json  { render :json => 
         @place.players.to_json(
