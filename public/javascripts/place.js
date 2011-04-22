@@ -14,8 +14,8 @@ function set_game_no(value){
   $("#game_no").text(value);
 };
 
-function set_place_player(value){
-  $("#place_player").text(value);
+function set_place_player(name){
+  var $player = get_player(name);
 };
 
 function set_place_info(value){
@@ -23,37 +23,37 @@ function set_place_info(value){
 };
 
 function set_place(list){
-  var cards = $("#place_cards");
-  cards.children().remove();
+  var $cards = $("#place_cards");
+  $cards.children().remove();
   $.each(list, function(i){
-    cards.append("<li><img src='/images/cards/" + list[i].id + ".png'/></li>");
+    $cards.append("<li><img src='/images/cards/" + list[i].id + ".png'/></li>");
   });
 };
 
 function set_player_cards(name, list, open){
-  var player = get_player(name);
-  var player_cards = player.children(".player_cards").children("ul");
-  player_cards.children().remove();
+  var $player = get_player(name);
+  var $player_cards = $player.children(".player_cards").children("ul");
+  $player_cards.children().remove();
   $.each(list, function(i){
     if(open){
-      player_cards.append("<li><img src='/images/cards/" + list[i].id + ".png'/></li>");
+      $player_cards.append("<li><img src='/images/cards/" + list[i].id + ".png'/></li>");
     }else{
-      player_cards.append("<li><img src='/images/cards/0.png'/></li>");
+      $player_cards.append("<li><img src='/images/cards/0.png'/></li>");
     }
   });
 };
 
 function set_player_place_cards(name, info, list){
-  var player = get_player(name);
-  var player_place_cards = player.children(".player_place_cards");
-  player_place_cards.children().remove();
+  var $player = get_player(name);
+  var $player_place_cards = $player.children(".player_place_cards");
+  $player_place_cards.children().remove();
   if(info != ""){
-    player_place_cards.append("<span>" + info + "</span>");
+    $player_place_cards.append("<span>" + info + "</span>");
   }else{
-    var cards = $("<ul/>"); 
+    var $cards = $("<ul/>"); 
     $.each(list, function(i){
-      cards.append("<li><img src='/images/cards/" + list[i].id + ".png'/></li>");
+      $cards.append("<li><img src='/images/cards/" + list[i].id + ".png'/></li>");
     });
-    player_place_cards.append(cards);
+    $player_place_cards.append($cards);
   }
 };

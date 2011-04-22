@@ -23,33 +23,22 @@
 <p>
   <b><%= @place.title %></b>
 </p>
-<div class='main'>
-  <div class='info'>
-    <div class='game'>
-      <div class='game_title'>
-          <span>Game No</span>
-      </div>
-      <div class='game_no'>
-          <span id='game_no'>1</span>
-      </div>
-    </div>
-  </div>
-  <div class='info'>
-      <div class='info_menu'>
-        <div>
-            <span>Place Player:</span>
-            <span id="place_player">player1</span>
-        </div>
-        <div>
-            <span>Place Info:</span>
-            <span id="place_info">Nomal</span>
-        </div>
-      </div>
-  </div>
+<form>
+<fieldset>
+<legend id="game_no">1</legend>
+    <dl>
+      <dt>
+        <span>Place Info:</span>
+        <span id="place_info">Nomal</span>
+      </dt>
+    </dl>
+    <dl>
   <div class='place'>
     <ul id='place_cards'>
     </ul>
   </div>
+</dl>
+<dl>
   <div class='players'>
     <ul id='players'>
       <% @place.players.each do |player| %>
@@ -72,9 +61,12 @@
     </ul>
   </div>
 </div>
+</dl>
+</fieldset>
+</form>
 <p>
 <button type="submit" id="start">start</button>
-<button type="submit" id="open">open</button>
+<button type="submit" id="open">reverse</button>
 </p>
 <hr/>
 

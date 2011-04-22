@@ -1,67 +1,11 @@
 button {
-  width: 50px;  
-}
-.main {  
-  width: 100%;  
-  padding-top:35px;
-  height:365px;
-  margin-top:30px;
-  margin-bottom:20px;
-  border:1px solid #333
-}
-.info {  
-  width: 71%;
-  height:30px;
-  margin: 0 auto;  
-  margin-bottom:15px;
-}
-.game {
-  float:left;
-  width: 250px;
-  height:30px;
-  padding-left:2%;
-  margin: 0 auto;  
-  margin-left:5px;
-  font-size:11px;
-}
-.game_title {
-  border: solid 1px #ccc;
-  float:left;
-  height:30px;
-  width: 62px;
-  line-height:30px;
+  width: 60px;  
   text-align:center;
-}
-.game_no {
-  border: solid 1px #ccc;
-  border-left: solid 0px #ccc;
-  float:left;
-  height:30px;
-  width: 62px;
-  line-height:30px;
-  text-align:center;
-}
-.info_menu {  
-  width: 99%;
-  margin-left:20px;
-  height:30px;
-  border: solid 1px #ccc;
-  border-right: solid 0px #ccc;
-}
-.info_menu div {  
-  float:left;
-  border: solid 0px #ccc;
-  border-right: solid 1px #ccc;
-  width: 48%;
-  height:30px;
-  line-height:30px;
-  padding-left:2%;
-  font-size:11px;
 }
 .place {  
-  border: solid 1px #ccc;
   width: 500px;  
   height:100px;
+  margin-top:20px;
   margin: 0 auto;  
   margin-bottom:4px;
 }
@@ -75,6 +19,7 @@ button {
 }  
 .players {  
   margin: 0 auto;  
+  height:150px;
 }
 .players ul {
   text-align: center;
