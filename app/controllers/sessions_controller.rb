@@ -5,7 +5,7 @@ class SessionsController < ApplicationController
   def create
     authenticate!
     flash[:notice] = "You loggined!"
-    redirect_to :controller => "menus", :action => "index"
+    redirect_to operations_path
   end
 
   def destroy

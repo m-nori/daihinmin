@@ -1,11 +1,12 @@
 Daihinmin::Application.routes.draw do
-  root :to => 'places#index'
+  root :to => 'welcome#index'
   resources :places do
     get 'start', :on => :member
     get 'open', :on => :member
   end
+  resources :operations
+  resources :welcome, :only => [:index]
   resources :users
-  resources :menus
   resource :sessions, :only => [:new, :create, :destroy]
   match 'login' => 'sessions#new'
   match 'logout' => 'sessions#destroy'

@@ -1,9 +1,8 @@
-<h1>Listing users</h1>
+<h1>Users</h1>
 
 <table>
   <tr>
     <th>Name</th>
-    <th>Password</th>
     <th>Url</th>
     <th></th>
     <th></th>
@@ -13,7 +12,6 @@
 <% @users.each do |user| %>
   <tr>
     <td><%= user.name %></td>
-    <td><%= user.password %></td>
     <td><%= user.url %></td>
     <td><%= link_to 'Show', user %></td>
     <td><%= link_to 'Edit', edit_user_path(user) %></td>
