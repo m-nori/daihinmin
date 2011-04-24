@@ -16,7 +16,6 @@ class SessionsController < ApplicationController
 
   def unauthenticated
     flash[:notice] = warden.message
-    redirect_to login_path
   end
 end
 

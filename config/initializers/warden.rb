@@ -16,11 +16,11 @@ end
 
 Warden::Strategies.add(:password) do
   def valid?
-    params.has_key?(:password) && params.has_key?(:name)
+    params.has_key?(:password) && params.has_key?(:name) && params.has_key?(:place_id)
   end
 
   def authenticate!
-    u = User.authenticate(params[:name],params[:password])
+    u = Player.authenticate(params[:name],params[:password],params[:place_id])
     u.nil? ? fail("Could not login") : success!(u)
   end
 end
