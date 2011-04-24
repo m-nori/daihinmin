@@ -69,6 +69,8 @@ GEM
       activesupport (= 3.0.5)
       bundler (~> 1.0)
       railties (= 3.0.5)
+    rails_warden (0.5.2)
+      warden
     railties (3.0.5)
       actionpack (= 3.0.5)
       activesupport (= 3.0.5)
@@ -111,6 +113,8 @@ GEM
     treetop (1.4.9)
       polyglot (>= 0.3.1)
     tzinfo (0.3.24)
+    warden (1.0.3)
+      rack (>= 1.0.0)
 
 PLATFORMS
   ruby
@@ -120,7 +124,9 @@ DEPENDENCIES
   msgpack-rpc
   mysql2
   rails (= 3.0.5)
+  rails_warden
   rev-websocket
   rspec
   rspec-rails
   ruby-debug19
+  warden

@@ -1,0 +1,10 @@
+<% if authenticated? %>
+  Logined.
+<% else %>
+  Not Logined.
+<% end %>
+<% "MSG:" + #{flash[:notice]} %>
+
+<h1>Login</h1>
+
+<%= render 'form' %>

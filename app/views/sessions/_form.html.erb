@@ -1,0 +1,13 @@
+<% form_tag :action => "create" do %>
+  <div class="field">
+    <%= label_tag 'name' %>:
+    <%= text_field_tag 'name' %><br />
+  </div>
+  <div class="field">
+    <%= label_tag 'password' %>:
+    <%= text_field_tag 'password' %><br />
+  </div>
+  <div class="actions">
+    <%= submit_tag "Login" %>
+  </div>
+<% end %>

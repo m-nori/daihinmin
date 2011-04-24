@@ -27,6 +27,9 @@ end
 gem 'rev-websocket'
 gem 'msgpack-rpc'
 
+gem "warden"
+gem "rails_warden"
+
 # Bundle the extra gems:
 # gem 'bj'
 # gem 'nokogiri'

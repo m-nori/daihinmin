@@ -5,6 +5,10 @@ Daihinmin::Application.routes.draw do
     get 'open', :on => :member
   end
   resources :users
+  resources :menus
+  resource :sessions, :only => [:new, :create, :destroy]
+  match 'login' => 'sessions#new'
+  match 'logout' => 'sessions#destroy'
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

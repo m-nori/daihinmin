@@ -1,0 +1,13 @@
+<% if authenticated? %>
+  Logined.
+<% else %>
+  Not Logined.
+<% end %>
+<p>
+Msg:<%= flash[:notice] %>
+</p>
+<p>
+Name:<%= @user.name %>
+</p>
+<%= button_to 'logout', logout_path %>
+
