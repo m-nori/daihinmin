@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
 
   def login_required
     return true if authenticated?
-    redirect_to :controller => "sessions", :action => "new"
+    redirect_to login_path
     false
   end
 end
