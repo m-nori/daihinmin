@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 # -*- coding:utf-8 -*-
 
-APP_PATH = File.expand_path('../../config/application',  __FILE__)
 require File.expand_path('../../config/boot',  __FILE__)
 require 'rev/websocket'
 require 'msgpack/rpc'

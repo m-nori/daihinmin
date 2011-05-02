@@ -1,18 +1,19 @@
 <script type="text/javascript">
   //<![CDATA[
+  dd.place.ShowOption.place_id = <%= @place.id %>;
+  dd.place.ShowOption.player_count = <%= @place.players.length %>;
   dd.place.ShowOption.start_url = "<%= start_place_path %>";
-  dd.place.ShowOption.open_url = "<%= open_place_path %>";
+  dd.place.ShowOption.players_card_url = "<%= players_card_place_path %>";
 
   $(document).ready(function(){
-    var show = new dd.place.Show("<%= @place.id %>");
-    var socket = new MyWebScoket();
+    var show = new dd.place.Show();
 
-    // webcoket start
-    socket.start();
+    // websoket start
+    dd.core.WebSocket.start(show);
 
-    // button action
-    $("#start").click(function(){show.start()});
-    $("#open").click(function(){show.open()});
+    // set an action on the button
+    $("#start").click(show.start).attr('disabled', true);
+    $("#reverse").click(show.reverse).attr('disabled', true);
   });
   //]]>
 </script>
@@ -64,7 +65,7 @@
 </form>
 <p>
 <button type="submit" id="start">start</button>
-<button type="submit" id="open">reverse</button>
+<button type="submit" id="reverse">reverse</button>
 </p>
 <hr/>
 

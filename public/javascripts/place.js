@@ -7,14 +7,10 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
    */
   dd.place.ShowOption = function() {};
   dd.place.ShowOption.prototype = {
-    /**
-     * @type String
-     */
+    place_id : 0,
+    player_count : 0,
     start_url : null,
-    /**
-     * @type String
-     */
-    open_url : null
+    players_card_url : null
   };
 
   /**
@@ -23,7 +19,8 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
   dd.place.Show = (function() {
     var Constr;
     var players = null;
-    var open_flg = false;
+    var reverse_flg = false;
+    var login_count = 0;
 
     // private methods
     var get_players = function() {
@@ -53,25 +50,59 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
       });
     };
 
-    // Constractor
-    Constr = function(id) {
-      this.id = id;
+    var set_player_place_cards = function (name, info, list) {
+      var $player = players[name];
+      var $player_place_cards = $player.children(".player_place_cards");
+      $player_place_cards.children().remove();
+      if(info != ""){
+        $player_place_cards.append("<span>" + info + "</span>");
+      }else{
+        var $cards = $("<ul/>"); 
+        $.each(list, function(i){
+          $cards.append("<li><img src='/images/cards/" + list[i].id + ".png'/></li>");
+        });
+        $player_place_cards.append($cards);
+      }
+    };
+
+    /**
+     * Constractor
+     */
+    Constr = function() {
       get_players();
-    }
+    };
 
     // public methods
     Constr.prototype = {
+      is_target : function(json) {
+        if(json.place == dd.place.ShowOption.place_id) {
+          return true;
+        } else {
+          return false;
+        }
+      },
+
       start : function() {
         $.getJSON(dd.place.ShowOption.start_url, function(json){
-          set_players_card(json, open_flg);
+          set_players_card(json, reverse_flg);
+        });
+        $("#reverse").attr('disabled', false);
+      },
+
+      reverse : function() {
+        reverse_flg = !reverse_flg
+        $.getJSON(dd.place.ShowOption.players_card_url, function(json){
+          set_players_card(json, reverse_flg);
         });
       },
 
-      open : function() {
-        open_flg = !open_flg
-        $.getJSON(dd.place.ShowOption.open_url, function(json){
-          set_players_card(json, open_flg);
-        });
+      login : function(json) {
+        var name = json.player.user.name;
+        set_player_place_cards(name, "login", []);
+        login_count++;
+        if(login_count == dd.place.ShowOption.player_count) {
+          $("#start").attr('disabled', false);
+        }
       }
     };
 
@@ -96,20 +127,5 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
     $.each(list, function(i){
       $cards.append("<li><img src='/images/cards/" + list[i].id + ".png'/></li>");
     });
-  };
-
-  function set_player_place_cards(name, info, list){
-    var $player = get_player(name);
-    var $player_place_cards = $player.children(".player_place_cards");
-    $player_place_cards.children().remove();
-    if(info != ""){
-      $player_place_cards.append("<span>" + info + "</span>");
-    }else{
-      var $cards = $("<ul/>"); 
-      $.each(list, function(i){
-        $cards.append("<li><img src='/images/cards/" + list[i].id + ".png'/></li>");
-      });
-      $player_place_cards.append($cards);
-    }
   };
 })();

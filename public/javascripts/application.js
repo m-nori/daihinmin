@@ -1,15 +1,31 @@
-// Place your application-specific JavaScript functions and classes here
-// This file is automatically included by javascript_include_tag :defaults
-WS_URL = "ws://localhost:8081";
-var MyWebScoket = function(exec){
-  // conect start
-  this.exec = exec;
-  this.ws = null;
-};
-MyWebScoket.prototype.start = function(){
-  this.ws = new WebSocket(WS_URL);
-  this.ws.onmessage = function(event) {
-    exec(event);
+if(typeof(dd) == 'undefined') { dd = {}; }
+if(typeof(dd.core) == 'undefined') { dd.core = {}; }
+
+(function() {
+  /**
+   * @class Option
+   */
+  dd.core.Option = function() {};
+  dd.core.Option.ws_url = "ws://localhost:8081";
+
+  /**
+   * @class Show
+   */
+  dd.core.WebSocket = {
+    /**
+     * WebSocket Start
+     * @param executer class
+     */
+    start : function(executer) {
+      var ws = new WebSocket(dd.core.Option.ws_url);
+      ws.onmessage = function(event) {
+        json = JSON.parse(event.data);
+        if(executer.is_target(json)) {
+          executer[json.operation](json);
+        }
+      };
+    }
   };
-}; 
+
+})();
 

@@ -106,7 +106,7 @@ class PlacesController < ApplicationController
     end
   end
 
-  def open
+  def players_card
     @place = Place.find(params[:id])
     respond_to do |format|
       format.json  { render :json => 

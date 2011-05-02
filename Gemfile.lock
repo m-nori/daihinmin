@@ -49,12 +49,15 @@ GEM
       i18n (>= 0.4.0)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
+    mechanize (1.0.0)
+      nokogiri (>= 1.2.1)
     mime-types (1.16)
     msgpack (0.4.4)
     msgpack-rpc (0.4.3)
       msgpack (>= 0.4.4)
       rev (>= 0.3.0)
     mysql2 (0.2.6)
+    nokogiri (1.4.4)
     polyglot (0.3.1)
     rack (1.2.2)
     rack-mount (0.6.13)
@@ -121,6 +124,7 @@ PLATFORMS
 
 DEPENDENCIES
   jquery-rails
+  mechanize
   msgpack-rpc
   mysql2
   rails (= 3.0.5)

@@ -2,7 +2,7 @@ Daihinmin::Application.routes.draw do
   root :to => 'welcome#index'
   resources :places do
     get 'start', :on => :member
-    get 'open', :on => :member
+    get 'players_card', :on => :member
   end
   resources :operations
   resources :welcome, :only => [:index]

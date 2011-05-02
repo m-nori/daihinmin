@@ -30,6 +30,8 @@ gem 'msgpack-rpc'
 gem "warden"
 gem "rails_warden"
 
+gem "mechanize"
+
 # Bundle the extra gems:
 # gem 'bj'
 # gem 'nokogiri'
