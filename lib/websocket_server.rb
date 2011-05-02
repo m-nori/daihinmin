@@ -30,7 +30,7 @@ end
 class RPCServer
   # send to all browser
   def push_data(data)
-    puts "push data"
+    puts "push data* '#{data}'"
     $sockets.each_value {|sock|
       sock.send_message(data)
     }

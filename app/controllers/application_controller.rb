@@ -6,4 +6,10 @@ class ApplicationController < ActionController::Base
     redirect_to login_path
     false
   end
+
+  def send_websocket(operation, place, json)
+    add = ",\"operation\":\"#{operation}\",\"place\":#{place}}"
+    param = json.sub(/}$/, add)
+    MyWebsocket.call(param)
+  end
 end

@@ -1,22 +1,20 @@
 <script type="text/javascript">
-  var open = false;
+  //<![CDATA[
+  dd.place.ShowOption.start_url = "<%= start_place_path %>";
+  dd.place.ShowOption.open_url = "<%= open_place_path %>";
+
   $(document).ready(function(){
+    var show = new dd.place.Show("<%= @place.id %>");
     var socket = new MyWebScoket();
+
+    // webcoket start
     socket.start();
+
+    // button action
+    $("#start").click(function(){show.start()});
+    $("#open").click(function(){show.open()});
   });
-  $(function(){
-    $("#start").click(function(){
-      $.getJSON("<%= start_place_path %>", function(json){
-        set_players_card(json, false);
-      });
-    });
-    $("#open").click(function(){
-      open = !open;
-      $.getJSON("<%= open_place_path %>", function(json){
-        set_players_card(json, open);
-      });
-    });
-  });
+  //]]>
 </script>
 
 <p id="notice"><%= notice %></p>
