@@ -21,7 +21,11 @@ if(typeof(dd.core) == 'undefined') { dd.core = {}; }
       ws.onmessage = function(event) {
         json = JSON.parse(event.data);
         if(executer.is_target(json)) {
-          executer[json.operation](json);
+          if(executer[json.operation] != undefined) {
+            executer[json.operation](json);
+          } else {
+            console.debug(json);
+          }
         }
       };
     }

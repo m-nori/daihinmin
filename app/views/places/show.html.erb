@@ -3,6 +3,8 @@
   dd.place.ShowOption.place_id = <%= @place.id %>;
   dd.place.ShowOption.player_count = <%= @place.players.length %>;
   dd.place.ShowOption.start_url = "<%= start_place_path %>";
+  dd.place.ShowOption.next_turn_url = "<%= next_turn_place_path %>";
+  dd.place.ShowOption.info_url = "<%= info_place_path %>";
   dd.place.ShowOption.players_card_url = "<%= players_card_place_path %>";
 
   $(document).ready(function(){
@@ -12,7 +14,7 @@
     dd.core.WebSocket.start(show);
 
     // set an action on the button
-    $("#start").click(show.start).attr('disabled', true);
+    $("#start").click(show.start);
     $("#reverse").click(show.reverse).attr('disabled', true);
   });
   //]]>
@@ -24,7 +26,7 @@
 </p>
 <form>
 <fieldset>
-<legend id="game_no">1</legend>
+<legend id="game_no">0</legend>
     <dl>
       <dt>
         <span>Place Info:</span>

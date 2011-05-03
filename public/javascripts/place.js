@@ -2,6 +2,24 @@ if(typeof(dd) == 'undefined') { dd = {}; }
 if(typeof(dd.place) == 'undefined') { dd.place = {}; }
 
 (function() {
+  $.extend({
+    "put" : function (url, data, success) {
+      var error = function(request, text_status, error_thrown) {
+        console.debug("start error");
+        console.debug(request);
+      }; 
+      return $.ajax({
+        "url" : url,
+        "data" : data,
+        "success" : success,
+        "type" : "PUT",
+        "cache" : false,
+        "dataType" : "json",
+        "error" : error
+      });
+    }
+  });
+
   /**
    * @class ShowOption
    */
@@ -10,6 +28,8 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
     place_id : 0,
     player_count : 0,
     start_url : null,
+    next_turn_url : null,
+    info_url : null,
     players_card_url : null
   };
 
@@ -30,11 +50,21 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
       });
     };
 
-    var set_players_card = function (json, open) {
-      for(var i = 0;i < json.length;i++){
-        var player = json[i].player;
-        set_player_cards(player.user.name, player.cards, open);
-      }
+    var set_place = function () {
+      $.getJSON(dd.place.ShowOption.info_url, function(json){
+        $("#game_no").text(json.game_no);
+        $("#place_info").text(json.place_info);
+        set_place_cards(json.cards);
+      });
+    };
+
+    var set_players_card = function () {
+      $.getJSON(dd.place.ShowOption.players_card_url, function(json){
+        for(var i = 0;i < json.length;i++){
+          var player = json[i].player;
+          set_player_cards(player.user.name, player.cards, reverse_flg);
+        }
+      });
     };
 
     var set_player_cards = function (name, list, open) {
@@ -65,6 +95,18 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
       }
     };
 
+    var set_place_cards = function (list) {
+      var $cards = $("#place_cards");
+      $cards.children().remove();
+      $.each(list, function(i){
+        $cards.append("<li><img src='/images/cards/" + list[i].id + ".png'/></li>");
+      });
+    };
+
+    var next_turn = function() {
+      $.put(dd.place.ShowOption.next_turn_url, {}, function() {});
+    };
+
     /**
      * Constractor
      */
@@ -74,6 +116,13 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
 
     // public methods
     Constr.prototype = {
+      start : function() {
+        $.put(dd.place.ShowOption.start_url, {},
+          function(data, text_status) { 
+            $("#start").attr('disabled', true);
+          });
+      },
+
       is_target : function(json) {
         if(json.place == dd.place.ShowOption.place_id) {
           return true;
@@ -82,50 +131,22 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
         }
       },
 
-      start : function() {
-        $.getJSON(dd.place.ShowOption.start_url, function(json){
-          set_players_card(json, reverse_flg);
-        });
+      start_place : function(json) {
         $("#reverse").attr('disabled', false);
+      },
+
+      start_game : function(json) {
+        set_place();
+        set_players_card();
+        next_turn();
       },
 
       reverse : function() {
         reverse_flg = !reverse_flg
-        $.getJSON(dd.place.ShowOption.players_card_url, function(json){
-          set_players_card(json, reverse_flg);
-        });
-      },
-
-      login : function(json) {
-        var name = json.player.user.name;
-        set_player_place_cards(name, "login", []);
-        login_count++;
-        if(login_count == dd.place.ShowOption.player_count) {
-          $("#start").attr('disabled', false);
-        }
+        set_players_card();
       }
     };
 
     return Constr;
   })();
-
-  function set_game_no(value){
-    $("#game_no").text(value);
-  };
-
-  function set_place_player(name){
-    var $player = get_player(name);
-  };
-
-  function set_place_info(value){
-    $("#place_info").text(value);
-  };
-
-  function set_place(list){
-    var $cards = $("#place_cards");
-    $cards.children().remove();
-    $.each(list, function(i){
-      $cards.append("<li><img src='/images/cards/" + list[i].id + ".png'/></li>");
-    });
-  };
 })();

@@ -1,10 +1,14 @@
 Daihinmin::Application.routes.draw do
   root :to => 'welcome#index'
   resources :places do
-    get 'start', :on => :member
+    put 'start', :on => :member
+    put 'next_turn', :on => :member
     get 'players_card', :on => :member
+    get 'info', :on => :member
   end
-  resources :operations
+  resources :operations, :only => [:index] do
+    get 'get_hand', :on => :collection
+  end
   resources :welcome, :only => [:index]
   resources :users
   resource :sessions, :only => [:new, :create, :destroy]

@@ -89,20 +89,19 @@ class PlacesController < ApplicationController
 
   def start
     @place = Place.find(params[:id])
-    hands = CardUtiles.create_hand(@place.players.length)
-    @place.players.each_with_index do |player, i|
-      player.cards = hands[i]
-      player.save
-    end
-
+    PlaceListener.add(params[:id], @place)
+    listener = PlaceListener.get(params[:id])
+    listener.next_turn
     respond_to do |format|
-      format.json  { render :json => 
-        @place.players.to_json(
-          :include => {:cards => {:only => [:id,:joker,:mark,:number]},
-            :user  => {:only => [:id,:name]}},
-          :only => [:id]
-        )
-      }
+      format.json { render :json => {}.to_json }
+    end
+  end
+
+  def next_turn
+    listener = PlaceListener.get(params[:id])
+    continue = listener.next_turn
+    respond_to do |format|
+      format.json { render :json => {:continue => continue}.to_json }
     end
   end
 
@@ -116,6 +115,13 @@ class PlacesController < ApplicationController
           :only => [:id]
         )
       }
+    end
+  end
+
+  def info
+    @place = Place.find(params[:id])
+    respond_to do |format|
+      format.json  { render :json => @place.info.to_json }
     end
   end
 end
