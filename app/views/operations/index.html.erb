@@ -1,16 +1,35 @@
-<% if authenticated? %>
-  Logined.
-<% else %>
-  Not Logined.
-<% end %>
+<h1>
+  <%= @player.place.title %>
+</h1>
+<h2>
+  <%= @player.user.name %>
+</h2>
+
 <p>
-Msg:<%= flash[:notice] %>
+Info Menu
 </p>
-<p>
-Name:<%= @player.user.name %>
-</p>
-<p>
-Place:<%= @player.place.title %>
-</p>
+<ul>
+  <li>Get Hand
+    <ul>
+      <li>
+        <%= link_to 'json', get_hand_operations_path + '.json' %>
+      </li>
+      <li>
+        <%= link_to 'xml', get_hand_operations_path + '.xml' %>
+      </li>
+    </ul>
+  </li>
+  <li>Get Place Info
+    <ul>
+      <li>
+        <%= link_to 'json', get_place_info_operations_path + '.json' %>
+      </li>
+      <li>
+        <%= link_to 'xml', get_place_info_operations_path + '.xml' %>
+      </li>
+  </ul>
+  </li>
+</ul>
+
 <%= button_to 'logout', logout_path %>
 

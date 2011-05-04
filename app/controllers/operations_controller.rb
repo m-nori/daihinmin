@@ -20,4 +20,13 @@ class OperationsController < ApplicationController
       }
     end
   end
+
+  def get_place_info
+    p = Player.find_by_id(current_user.id)
+    place = Place.find(p.place_id)
+    respond_to do |format|
+      format.json  { render :json => place.info_for_player.to_json }
+      format.xml  { render :json => place.info_for_player.to_xml }
+    end
+  end
 end

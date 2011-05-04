@@ -20,4 +20,17 @@ class Place < ActiveRecord::Base
     map[:cards] = turn.place_cards
     map
   end
+
+  def info_for_player
+    map = {}
+    map[:game_count] = game_count
+    map[:player_count] = players.length
+    list = []
+    players.each do |p|
+      list << {:name => p.user.name,
+               :has_card => p.cards.length}
+    end
+    map[:player_info] = list
+    map
+  end
 end

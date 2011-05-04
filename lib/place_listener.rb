@@ -52,7 +52,7 @@ class PlaceListener
       @game_count += 1
       @game = @place.games.build(:no => @game_count,
                                  :status => 0,
-                                 :place_info => "")
+                                 :place_info => "Nomal")
       @game.save
       create_players_hand
       @game_players = create_player_list
@@ -72,7 +72,9 @@ class PlaceListener
                        :no => @turn_count)
       @turn.place_cards = @game_place
       @turn.save
-      send_data = {:player => turn_player.user.name }
+      send_data = {:player => turn_player.user.name, 
+                   :place_cards => @game_place,
+                   :place_info => @game.place_info}
       send_websocket("start_turn", send_data.to_json)
     end
 
