@@ -103,6 +103,11 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
       });
     };
 
+    var set_player = function(name) {
+      var $player = players[name];
+      $player.find(".player_name").css("background-color", "black").css("color", "#fff");
+    };
+
     var next_turn = function() {
       $.put(dd.place.ShowOption.next_turn_url, {}, function() {});
     };
@@ -139,6 +144,10 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
         set_place();
         set_players_card();
         next_turn();
+      },
+
+      start_turn : function(json) {
+        set_player(json.player);
       },
 
       reverse : function() {
