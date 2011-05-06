@@ -99,9 +99,9 @@ class PlacesController < ApplicationController
 
   def next_turn
     listener = PlaceListener.get(params[:id])
-    continue = listener.next_turn
+    listener.next_turn
     respond_to do |format|
-      format.json { render :json => {:continue => continue}.to_json }
+      format.json { render :json => {}.to_json }
     end
   end
 

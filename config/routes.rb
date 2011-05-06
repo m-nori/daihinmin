@@ -9,7 +9,7 @@ Daihinmin::Application.routes.draw do
   resources :operations, :only => [:index] do
     get 'get_hand', :on => :collection
     get 'get_place_info', :on => :collection
-    post 'put_card', :on => :collection
+    post 'post_cards', :on => :collection
   end
   resources :welcome, :only => [:index]
   resources :users

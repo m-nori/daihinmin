@@ -1,3 +1,20 @@
+<script type="text/javascript">
+  //<![CDATA[
+  $(document).ready(function(){
+    $("#add").click(function() {
+      var size = $("#cards li").size() + 1;
+      var id = "card_" + size;
+      var html = "<li>";
+      html += "<label for='" + id + "'>Card " + size + "</label>: ";
+      html += "<input id='" + id + "' name='" + id + "' type='text' />";
+      html += "<br />";
+      html += "</li>";
+      $("#cards").append(html);
+    });
+  });
+  //]]>
+</script>
+
 <h1>
   <%= @player.place.title %>
 </h1>
@@ -30,6 +47,39 @@ Info Menu
   </ul>
   </li>
 </ul>
+
+<p>
+Post Cards
+</p>
+<% form_tag :action => "post_cards" do %>
+  <ul id="cards">
+    <li>
+      <%= label_tag 'card_1' %>:
+      <%= text_field_tag 'card_1' %><br />
+    </li>
+    <li>
+      <%= label_tag 'card_2' %>:
+      <%= text_field_tag 'card_2' %><br />
+    </li>
+    <li>
+      <%= label_tag 'card_3' %>:
+      <%= text_field_tag 'card_3' %><br />
+    </li>
+    <li>
+      <%= label_tag 'card_4' %>:
+      <%= text_field_tag 'card_4' %><br />
+    </li>
+  </ul>
+  <dl>
+    <dd>
+      <input id="add" type="button" value="Add Card"/>
+    </dd>
+  </dl>
+  <div class="actions">
+    <%= submit_tag "Post!" %>
+  </div>
+<% end %>
+<p/>
 
 <%= button_to 'logout', logout_path %>
 

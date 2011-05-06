@@ -29,4 +29,21 @@ class OperationsController < ApplicationController
       format.xml  { render :json => place.info_for_player.to_xml }
     end
   end
+
+  def post_cards
+    p = Player.find_by_id(current_user.id)
+    cards = []
+    params.each_pair do |k,v|
+      next if /card_/ !~ k
+      next if /^\s*$/ =~ v
+      cards << v
+    end
+    logger.debug(cards)
+    listener = PlaceListener.get(p.place_id)
+    if listener
+      listener.accept_cards(p.id, cards)
+    end
+    redirect_to operations_path
+  end
 end
+
