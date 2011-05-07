@@ -38,11 +38,7 @@ class OperationsController < ApplicationController
       next if /^\s*$/ =~ v
       cards << v
     end
-    logger.debug(cards)
-    listener = PlaceListener.get(p.place_id)
-    if listener
-      listener.accept_cards(p.id, cards)
-    end
+    PlaceListener.accept_cards(p.place_id, p.id, cards)
     redirect_to operations_path
   end
 end

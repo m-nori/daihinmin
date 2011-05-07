@@ -15,6 +15,18 @@ class CardUtiles
     cards.all?{|card| hand.any?{|h| h.equal_card?(card)}}
   end
 
+  def self.reject(cards, target)
+    cards.reject{|c| 
+      target.any?{|t| c[:joker] == t[:joker] && c[:number] == t[:number] && c[:mark] == t[:mark] }
+    }
+  end
+
+  def self.find_all(cards, target)
+    cards.find_all{|c| 
+      target.any?{|t| c[:joker] == t[:joker] && c[:number] == t[:number] && c[:mark] == t[:mark] }
+    }
+  end
+
   def self.yaku?(cards)
     case
     when cards.length <= 1

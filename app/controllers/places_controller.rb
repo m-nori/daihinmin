@@ -89,17 +89,14 @@ class PlacesController < ApplicationController
 
   def start
     @place = Place.find(params[:id])
-    PlaceListener.add(params[:id], @place)
-    listener = PlaceListener.get(params[:id])
-    listener.next_turn
+    PlaceListener.start(params[:id], @place)
     respond_to do |format|
       format.json { render :json => {}.to_json }
     end
   end
 
   def next_turn
-    listener = PlaceListener.get(params[:id])
-    listener.next_turn
+    PlaceListener.next_turn(params[:id])
     respond_to do |format|
       format.json { render :json => {}.to_json }
     end
