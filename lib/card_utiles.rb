@@ -31,6 +31,18 @@ class CardUtiles
   end
 
   def self.compare_yaku(place_cards, cards, revolution)
+    case
+    when place_cards.length == 0
+      cards.length == 0 ? false : true
+    when cards.length == 0
+      true
+    when place_cards.length != cards.length
+      false
+    else
+      sorted_place = self.sort(place_cards, revolution)
+      sorted_cards = self.sort(cards, revolution)
+      self.compare_to(sorted_cards[0], sorted_place[0], revolution) == 1
+    end
   end
 
   def self.pare?(cards)
