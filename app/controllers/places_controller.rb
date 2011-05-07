@@ -89,7 +89,7 @@ class PlacesController < ApplicationController
 
   def start
     @place = Place.find(params[:id])
-    PlaceListener.start(params[:id], @place)
+    PlaceListener.start(params[:id], @place, logger)
     respond_to do |format|
       format.json { render :json => {}.to_json }
     end

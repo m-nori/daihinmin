@@ -1,8 +1,8 @@
 class PlaceListener
   @@hash = {}
 
-  def self.start(id, place)
-    core = PlaceListenerCore.new(place)
+  def self.start(id, place, logger=nil)
+    core = PlaceListenerCore.new(place, logger)
     @@hash[id.to_s] = core
     Thread.new do
       core.start
@@ -22,24 +22,27 @@ class PlaceListener
   def self.accept_cards(id, player_id, card_strings)
     core = @@hash[id.to_s]
     if core
-      Thread.new do
+      # Thread.new do
         core.accept_cards(player_id, card_strings)
-      end
+      # end
     end
   end
 
   class PlaceListenerCore
-    def initialize(place)
+    def initialize(place, logger)
       @place = place
+      @logger = logger
     end
 
     def start
+      debug("start")
       @game_count = 0
       init_game
       send_websocket("start_place", @place.to_json)
     end
 
     def next_turn
+      debug("next_turn")
       case
       when @game == nil
         if @game_count < @place.game_count
@@ -47,7 +50,7 @@ class PlaceListener
         else
           end_place
         end
-      when game_end?
+      when @game_players.length == 1 ? true : false
         end_game
       else
         start_turn 
@@ -55,34 +58,38 @@ class PlaceListener
     end
 
     def accept_cards(player_id, card_strings)
+      debug("accept_cards")
       # TODO time out
       cards = CardUtiles.to_hashs(card_strings)
       if put_place?(player_id, cards)
         update_turn(cards)
-        end_player if @turn.player.cards.length == 0
+        end_player(@turn.player) if @turn.player.cards.length == 0
       else
-        miss_end_player
+        miss_end_player(@turn.player)
       end
       end_turn
     end
 
     private
     def end_place
-      # TODO status update
+      debug("end_place")
       send_websocket("end_place", @place.to_json)
     end
 
     def init_game
-        @game = nil
-        @game_place = []
-        @game_players = []
-        @turn_player_index = 0
-        @turn_count = 0
-        @revolution = false
-        @pass_players = []
+      debug("init_game")
+      @game = nil
+      @game_place = []
+      @game_players = []
+      @turn_player_index = 0
+      @turn_count = 0
+      @revolution = false
+      @pass_players = []
+      @ranks = Array.new(@place.players.length)
     end
 
     def start_game
+      debug("start_game")
       @game_count += 1
       @game = @place.games.build(:no => @game_count,
                                  :status => 0,
@@ -94,22 +101,25 @@ class PlaceListener
     end
 
     def end_game
-      # TODO rank
+      debug("end_game")
+      end_player(@game_players[0])
+      @game.status = 1
+      @game.ranks  = @ranks
+      @game.save
+      send_websocket("end_game", @game.to_json)
       init_game
     end
 
-    def game_end?
-      @game_players.length == 1 ? true : false
-    end
-
     def start_turn
+      debug("start_turn")
       @turn = nil
+      @put_cards = nil
       @turn_count += 1
       turn_player = @game_players[@turn_player_index]
       @turn = Turn.new(:game_id => @game.id,
                        :player_id => turn_player.id,
                        :no => @turn_count)
-      @turn.place_cards = @game_place
+      @turn.place_cards = @game_place.map{|c| p=PlaceCard.new; p.card = c; p}
       @turn.save
       send_data = {:player => turn_player.user.name, 
                    :place_cards => @game_place,
@@ -118,38 +128,41 @@ class PlaceListener
     end
 
     def update_turn(cards)
+      debug("update_turn")
       player = @turn.player
-      player_cards = CardUtiles.reject_cards(player.cards, cards)
-      put_cards = CardUtiles.find_all(player.cards, cards)
-      @turn.turn_cards = put_cards
+      player_cards = CardUtiles.reject(player.cards, cards)
+      @put_cards = CardUtiles.find_all(player.cards, cards)
+      @turn.turn_cards = @put_cards.map{|c| t=TurnCard.new; t.card = c; t}
       @turn.save
-      player.cards = place_cards
+      player.cards = player_cards
       player.save
       if cards.length != 0
-        @game_place = put_cards
+        @game_place = @put_cards
       else
         @pass_players << player.id
       end
     end
 
     def end_turn
+      debug("end_turn")
       if @pass_players.length == (@game_players.length - 1)
+        # set revolution
+        if @game_place.length >= 4 && CardUtiles.pare?(@game_place)
+          @revolution = !@revolution
+        end
         # reset place
         @game_place = []
         @pass_players = []
-        # set revolution
-        if @turn.turn_cards.length >= 4 && CardUtiles.pare?(@turn.turn_cards)
-          @revolution = !@revolution
-        end
       else
-        @turn_player_index = next_player
+        @turn_player_index = next_player(@turn_player_index)
       end
       send_data = {:player => @turn.player.user.name, 
-                   :turn_cards => @turn.turn_cards}
+                   :turn_cards => @put_cards}
       send_websocket("end_turn", send_data.to_json)
     end
 
     def put_place?(player_id, cards)
+      debug("put_place?")
       case
       when @turn == nil
         false
@@ -166,15 +179,40 @@ class PlaceListener
       end
     end
 
-    def end_player
-      # TODO etc...
+    def end_player(player)
+      debug("end_player")
+      rank = nil
+      @ranks.length.times do |i|
+        unless @ranks[i-1]
+          rank = Rank.new(:rank => i)
+          rank.game = @game
+          rank.player = player
+          @ranks[i-1] = rank
+          break
+        end
+      end
+      @game_players.delete(player)
+      send_websocket("end_player", rank.to_json)
     end
 
-    def miss_end_player
-      # TODO etc...
+    def miss_end_player(player)
+      debug("miss_end_player")
+      rank = nil
+      @ranks.length.downto(1) do |i|
+        unless @ranks[i-1]
+          rank = Rank.new(:rank => i)
+          rank.game = @game
+          rank.player = player
+          @ranks[i-1] = rank
+          break
+        end
+      end
+      @game_players.delete(player)
+      send_websocket("end_player", rank.to_json)
     end
 
     def create_players_hand
+      debug("create_players_hand")
       hands = CardUtiles.create_hand(@place.players.length)
       # TODO card change
       @place.players.each_with_index do |player, i|
@@ -184,6 +222,7 @@ class PlaceListener
     end
 
     def create_player_list
+      debug("create_player_list")
       list = []
       players = @place.players
       if @game_count == 1
@@ -204,6 +243,7 @@ class PlaceListener
     end
 
     def next_player(now_index)
+      debug("next_player")
       index = now_index + 1
       index = 0 if @game_players.length  <= index
       if @pass_players.include?(@game_players[index].id)
@@ -211,6 +251,14 @@ class PlaceListener
       else
         index
       end
+    end
+
+    def send_websocket(operation, json)
+      debug("send_websocket")
+      add = ",\"operation\":\"#{operation}\",\"place\":#{@place.id}}"
+      param = json.sub(/}$/, add)
+      debug("send_msg=#{param}")
+      WebsocketSender.call(param)
     end
 
     def get_place_info
@@ -221,10 +269,10 @@ class PlaceListener
       end
     end
 
-    def send_websocket(operation, json)
-      add = ",\"operation\":\"#{operation}\",\"place\":#{@place.id}}"
-      param = json.sub(/}$/, add)
-      WebsocketSender.call(param)
+    def debug(msg)
+      if @logger
+        @logger.debug(msg)
+      end
     end
   end
 end
