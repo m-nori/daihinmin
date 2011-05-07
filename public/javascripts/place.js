@@ -19,6 +19,9 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
       });
     }
   });
+  $.ajaxSetup({
+    cache: false
+  });
 
   /**
    * @class ShowOption
@@ -89,7 +92,7 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
       }else{
         var $cards = $("<ul/>"); 
         $.each(list, function(i){
-          $cards.append("<li><img src='/images/cards/" + list[i].id + ".png'/></li>");
+          $cards.append("<li><img src='/images/cards/" + list[i].card.id + ".png'/></li>");
         });
         $player_place_cards.append($cards);
       }
@@ -99,13 +102,18 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
       var $cards = $("#place_cards");
       $cards.children().remove();
       $.each(list, function(i){
-        $cards.append("<li><img src='/images/cards/" + list[i].id + ".png'/></li>");
+        $cards.append("<li><img src='/images/cards/" + list[i].card.id + ".png'/></li>");
       });
     };
 
     var set_player = function(name) {
       var $player = players[name];
       $player.find(".player_name").css("background-color", "black").css("color", "#fff");
+    };
+
+    var un_set_player = function(name) {
+      var $player = players[name];
+      $player.find(".player_name").css("background-color", "#fff").css("color", "black");
     };
 
     var next_turn = function() {
@@ -146,12 +154,32 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
         next_turn();
       },
 
+      end_game : function(json) {
+        next_turn();
+      },
+
       start_turn : function(json) {
+        set_place();
         set_player(json.player);
       },
 
+      end_turn : function(json) {
+        var info = "";
+        if(json.turn_cards.length == 0) {
+          info = "PASS";
+        }
+        set_player_place_cards(json.player, info, json.turn_cards);
+        un_set_player(json.player);
+        set_players_card();
+        next_turn();
+      },
+
+      end_player : function(json) {
+        set_player_place_cards(json.player, json.rank.rank.rank, []);
+      },
+
       reverse : function() {
-        reverse_flg = !reverse_flg
+        reverse_flg = !reverse_flg;
         set_players_card();
       }
     };

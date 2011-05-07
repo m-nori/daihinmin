@@ -4,8 +4,8 @@
   dd.place.ShowOption.player_count = <%= @place.players.length %>;
   dd.place.ShowOption.start_url = "<%= start_place_path %>";
   dd.place.ShowOption.next_turn_url = "<%= next_turn_place_path %>";
-  dd.place.ShowOption.info_url = "<%= info_place_path %>";
-  dd.place.ShowOption.players_card_url = "<%= players_card_place_path %>";
+  dd.place.ShowOption.info_url = "<%= info_place_path + ".json" %>";
+  dd.place.ShowOption.players_card_url = "<%= players_card_place_path + ".json" %>";
 
   $(document).ready(function(){
     var show = new dd.place.Show();

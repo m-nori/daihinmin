@@ -53,7 +53,7 @@ class CardUtiles
     else
       sorted_place = self.sort(place_cards, revolution)
       sorted_cards = self.sort(cards, revolution)
-      self.compare_to(sorted_cards[0], sorted_place[0], revolution) == 1
+      self.compare_to(sorted_place[0], sorted_cards[0], revolution) == -1
     end
   end
 

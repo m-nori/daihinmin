@@ -17,7 +17,11 @@ class Place < ActiveRecord::Base
     turn = Turn.where(:game_id => game.id).order("no desc").limit(1)[0]
     map[:game_no] = game.no
     map[:place_info] = game.place_info
-    map[:cards] = turn.place_cards
+    if turn
+      map[:cards] = turn.cards
+    else
+      map[:cards] = []
+    end
     map
   end
 
