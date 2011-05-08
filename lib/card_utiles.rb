@@ -57,6 +57,27 @@ class CardUtiles
     end
   end
 
+  def self.last_card_miss?(player_cards, cards, revolution)
+    max = RANK[revolution].last
+    case
+    when player_cards.length != 0
+      false
+    when cards.length == 1
+      case
+      when cards[0][:joker]
+        true
+      when cards[0][:number] == max
+        true
+      else
+        false
+      end
+    when  cards.any?{|c| c[:number] == max}
+      true
+    else
+      false
+    end
+  end
+
   def self.pare?(cards)
     not_jokers = cards.reject{|card| card[:joker]}
     n = not_jokers[0][:number]

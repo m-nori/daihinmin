@@ -86,16 +86,42 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
     var set_player_place_cards = function (name, info, list) {
       var $player = players[name];
       var $player_place_cards = $player.children(".player_place_cards");
-      $player_place_cards.children().remove();
       if(info != ""){
-        $player_place_cards.append("<span>" + info + "</span>");
+        if($player_place_cards.text().trim().match(/.*RANK:.*/) == null) {
+          $player_place_cards.children().remove();
+          $player_place_cards.append("<span>" + info + "</span>");
+        }
       }else{
-        var $cards = $("<ul/>"); 
-        $.each(list, function(i){
-          $cards.append("<li><img src='/images/cards/" + list[i].card.id + ".png'/></li>");
-        });
-        $player_place_cards.append($cards);
+        if($player_place_cards.text().trim().match(/.*RANK:.*/) == null) {
+          $player_place_cards.children().remove();
+          var $cards = $("<ul/>"); 
+          $.each(list, function(i){
+            $cards.append("<li><img src='/images/cards/" + list[i].card.id + ".png'/></li>");
+          });
+          $player_place_cards.append($cards);
+        }
       }
+    };
+
+    var reset_place_and_player = function () {
+      set_place_cards([]);
+      $(".player").each(function() {
+        var name = $(this).find(".player_name span").text().trim()
+        un_set_player(name)
+        set_player_place_cards(name, "", [])
+      });
+    };
+
+    var init_place_and_player = function () {
+      set_place_cards([]);
+      $(".player").each(function() {
+        var name = $(this).find(".player_name span").text().trim()
+        var $player = players[name];
+        var $player_place_cards = $player.children(".player_place_cards");
+        un_set_player(name)
+        set_player_place_cards(name, "", [])
+        $player_place_cards.children().remove();
+      });
     };
 
     var set_place_cards = function (list) {
@@ -149,6 +175,7 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
       },
 
       start_game : function(json) {
+        init_place_and_player();
         set_place();
         set_players_card();
         next_turn();
@@ -171,11 +198,14 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
         set_player_place_cards(json.player, info, json.turn_cards);
         un_set_player(json.player);
         set_players_card();
+        if(json.reset_place) {
+          reset_place_and_player();
+        }
         next_turn();
       },
 
       end_player : function(json) {
-        set_player_place_cards(json.player, json.rank.rank.rank, []);
+        set_player_place_cards(json.player, "RANK:" + json.rank.rank.rank, []);
       },
 
       reverse : function() {

@@ -38,6 +38,8 @@ class PlaceListener
   end
 
   class PlaceListenerCore
+    INTERVAL = 0.5
+
     def initialize(place, logger)
       @place = place
       @logger = logger
@@ -55,6 +57,7 @@ class PlaceListener
 
     def next_turn
       debug("next_turn")
+      debug("playing_player_count=#{playing_player_count}")
       case
       when @game == nil
         if @game_count < @place.game_count
@@ -62,7 +65,7 @@ class PlaceListener
         else
           end_place
         end
-      when @game_players.length == 1 ? true : false
+      when playing_player_count == 1
         end_game
       else
         start_turn 
@@ -73,23 +76,29 @@ class PlaceListener
       debug("accept_cards")
       # TODO time out
       cards = CardUtiles.to_hashs(card_strings)
+      reset = false
       if put_place?(player_id, cards)
         update_turn(cards)
-        end_player(@turn.player) if @turn.player.cards.length == 0
         case
-        when @pass_players.length == (@game_players.length - 1)
+        when @turn.player.cards.length == 0
+          end_player(@game_players[@turn_player_index])
           @turn_player_index = next_player(@turn_player_index)
-          reset_place
+          reset = true
+        when @pass_players.length == (playing_player_count - 1)
+          @turn_player_index = next_player(@turn_player_index)
+          reset = true
         when @game_place.any?{|card| card[:number] == 8}
-          reset_place
+          reset = true
         else
           @turn_player_index = next_player(@turn_player_index)
         end
       else
-        miss_end_player(@turn.player)
-        reset_place
+        miss_end_player(@game_players[@turn_player_index])
+        @turn_player_index = next_player(@turn_player_index)
+        reset = true
       end
-      end_turn
+      reset_place if reset
+      end_turn(reset)
     end
 
     private
@@ -151,7 +160,7 @@ class PlaceListener
 
     def update_turn(cards)
       debug("update_turn")
-      player = @turn.player
+      player = @game_players[@turn_player_index]
       player_cards = CardUtiles.reject(player.cards, cards)
       @put_cards = CardUtiles.find_all(player.cards, cards)
       @turn.turn_cards = @put_cards.map{|c| t=TurnCard.new; t.card = c; t}
@@ -165,10 +174,11 @@ class PlaceListener
       end
     end
 
-    def end_turn
+    def end_turn(reset)
       debug("end_turn")
       send_data = {:player => @turn.player.user.name, 
-                   :turn_cards => @put_cards}
+                   :turn_cards => @put_cards,
+                   :reset_place => reset}
       send_websocket("end_turn", send_data.to_json)
     end
 
@@ -181,7 +191,6 @@ class PlaceListener
       # reset place
       @game_place = []
       @pass_players = []
-      send_websocket("reset_place", {}.to_json)
     end
 
     def put_place?(player_id, cards)
@@ -203,6 +212,9 @@ class PlaceListener
       when !CardUtiles.compare_yaku(@game_place, cards, @revolution)
         debug("yaku loss")
         false
+      when CardUtiles.last_card_miss?(@turn.player.cards, cards, @revolution)
+        debug("last card miss")
+        false
       else
         true
       end
@@ -220,10 +232,10 @@ class PlaceListener
           break
         end
       end
-      @game_players = @game_players.reject{|p| p == player}
       send_data = {:player => player.user.name,
                    :rank => rank}
       send_websocket("end_player", send_data.to_json)
+      sleep(INTERVAL)
     end
 
     def miss_end_player(player)
@@ -238,12 +250,12 @@ class PlaceListener
           break
         end
       end
-      @game_players = @game_players.reject{|p| p == player}
       player.cards = []
       player.save
       send_data = {:player => player.user.name,
                    :rank => rank}
       send_websocket("end_player", send_data.to_json)
+      sleep(INTERVAL)
     end
 
     def create_players_hand
@@ -281,11 +293,23 @@ class PlaceListener
       debug("next_player")
       index = now_index + 1
       index = 0 if @game_players.length  <= index
-      if @pass_players.include?(@game_players[index].id)
+      case
+      when @pass_players.include?(@game_players[index].id)
+        next_player(index)
+      when @game_players[index].cards.length == 0
         next_player(index)
       else
         index
       end
+    end
+
+    def playing_player_count
+      count = 0
+      @game_players.each{|p|
+        debug("#{p.user.name}:#{p.cards.length}")
+        count +=1 if p.cards.length != 0
+      }
+      count
     end
 
     def send_websocket(operation, json)
