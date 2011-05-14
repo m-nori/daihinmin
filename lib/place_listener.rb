@@ -6,27 +6,21 @@ class PlaceListener
     core = PlaceListenerCore.new(place, logger)
     @@logger ||= logger
     @@hash[id.to_s] = core
-    # Thread.new do
-      core.start
-      core.next_turn
-    # end
+    core.start
+    core.next_turn
   end
 
   def self.next_turn(id)
     core = @@hash[id.to_s]
     if core
-      # Thread.new do
-        core.next_turn
-      # end
+      core.next_turn
     end
   end
 
   def self.accept_cards(id, player_id, card_strings)
     core = @@hash[id.to_s]
     if core
-      # Thread.new do
-        core.accept_cards(player_id, card_strings)
-      # end
+      core.accept_cards(player_id, card_strings)
     end
   end
 
@@ -128,12 +122,16 @@ class PlaceListener
       @game.save
       create_players_hand
       @game_players = create_player_list
+      if @game_count != 1
+        card_change
+      end
       send_websocket("start_game", @game.to_json)
     end
 
     def end_game
       debug("end_game")
       end_player(@game_players[0])
+      @last_ranks = @ranks
       @game.status = 1
       @game.ranks  = @ranks
       @game.save
@@ -263,10 +261,10 @@ class PlaceListener
     def create_players_hand
       debug("create_players_hand")
       hands = CardUtiles.create_hand(@place.players.length)
-      # TODO card change
       @place.players.each_with_index do |player, i|
         player.cards = hands[i]
         player.save
+        debug("#{player.user.name}:#{player.cards}")
       end
     end
 
@@ -278,8 +276,8 @@ class PlaceListener
         start_player = (Player.joins(:cards).where(:place_id => @place.id) &
                         Card.where(:mark => 2).where(:number => 3))[0]
       else
-        # TODO from rank
-        start_player = players[0]
+        first_player_id = @last_ranks.last.player_id
+        start_player = players.index{|p| p.id == first_player_id}
       end
       i = players.index(start_player)
       m = players.length
@@ -289,6 +287,28 @@ class PlaceListener
         list = players[i..(m-1)] + players[0..(i-1)]
       end
       list
+    end
+
+    def card_change
+      change(@game_players.find{|p| p.id == @last_ranks[0].player_id},
+        @game_players.find{|p| p.id == @last_ranks[@last_ranks.length - 1].player_id},
+        2)
+      change(@game_players.find{|p| p.id == @last_ranks[1].player_id},
+        @game_players.find{|p| p.id == @last_ranks[@last_ranks.length - 2].player_id},
+        1)
+    end
+
+    def change(a, b, change_count)
+      a_sort_cards = CardUtiles.sort(a.cards)
+      b_sort_cards = CardUtiles.sort(b.cards).reverse
+      a_change = a_sort_cards.slice!(0,change_count)
+      b_change = b_sort_cards.slice!(0,change_count)
+      a.cards = a_sort_cards + b_change
+      a.save
+      b.cards = b_sort_cards + a_change
+      b.save
+      debug("#{a.user.name}_change:#{a_change}")
+      debug("#{b.user.name}_change:#{b_change}")
     end
 
     def next_player(now_index)

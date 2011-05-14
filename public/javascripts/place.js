@@ -42,8 +42,10 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
   dd.place.Show = (function() {
     var Constr;
     var players = null;
+    var start_flg = false;
     var reverse_flg = false;
-    var login_count = 0;
+    var manual = true;
+    var interval = 0;
 
     // private methods
     var get_players = function() {
@@ -134,16 +136,30 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
 
     var set_player = function(name) {
       var $player = players[name];
-      $player.find(".player_name").css("background-color", "black").css("color", "white");
+      $player.addClass("select_player");
     };
 
     var un_set_player = function(name) {
       var $player = players[name];
-      $player.find(".player_name").css("background-color", "").css("color", "black");
+      $player.removeClass("select_player");
     };
 
     var next_turn = function() {
       $.put(dd.place.ShowOption.next_turn_url, {}, function() {});
+    };
+
+    var  interval_change_exec = function() {
+      var val = $("#interval").val();
+      if(val == "manual") {
+        manual = true;
+        if(start_flg) {
+          $("#manual").attr('disabled', false);
+        }
+      } else {
+        manual = false;
+        interval = parseInt(val) * 1000;
+        $("#manual").attr('disabled', true);
+      }
     };
 
     /**
@@ -171,7 +187,9 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
       },
 
       start_place : function(json) {
+        start_flg = true;
         $("#reverse").attr('disabled', false);
+        interval_change_exec();
       },
 
       start_game : function(json) {
@@ -201,11 +219,21 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
         if(json.reset_place) {
           reset_place_and_player();
         }
-        next_turn();
+        if(!manual) {
+          setTimeout(next_turn, interval);
+        }
       },
 
       end_player : function(json) {
         set_player_place_cards(json.player, "RANK:" + json.rank.rank.rank, []);
+      },
+
+      next : function(json) {
+        next_turn();
+      },
+
+      interval_change : function() {
+        interval_change_exec();
       },
 
       reverse : function() {

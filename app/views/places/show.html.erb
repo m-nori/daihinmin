@@ -16,6 +16,8 @@
     // set an action on the button
     $("#start").click(show.start);
     $("#reverse").click(show.reverse).attr('disabled', true);
+    $("#manual").click(show.next).attr('disabled', true);
+    $("#interval").change(show.interval_change);
   });
   //]]>
 </script>
@@ -25,8 +27,8 @@
   <b><%= @place.title %></b>
 </p>
 <form>
-<fieldset>
-<legend id="game_no">0</legend>
+  <fieldset>
+    <legend id="game_no">0</legend>
     <dl>
       <dt>
         <span>Place Info:</span>
@@ -34,40 +36,51 @@
       </dt>
     </dl>
     <dl>
-  <div class='place drop-shadow'>
-    <ul id='place_cards'>
-    </ul>
-  </div>
-</dl>
-<dl>
-  <div class='players'>
-    <ul id='players'>
-      <% @place.players.each do |player| %>
-        <li>
-          <div class="player drop-shadow lifted">
-            <div class='player_name'>
-              <span>
-                <%= User.find(player.user_id).name %>
-              </span>
-            </div>
-            <div class='player_place_cards'>
-              <span>init</span>
-            </div>
-            <div class='player_cards'>
-              <ul/>
-            </div>
-          </div>
-        </li>
-      <% end %>
-    </ul>
-  </div>
-</div>
-</dl>
-</fieldset>
+      <div class='place drop-shadow'>
+        <ul id='place_cards'>
+        </ul>
+      </div>
+    </dl>
+    <dl>
+      <div class='players'>
+        <ul id='players'>
+          <% @place.players.each do |player| %>
+            <li>
+              <div class="player drop-shadow lifted">
+                <div class='player_name'>
+                  <span>
+                    <%= User.find(player.user_id).name %>
+                  </span>
+                </div>
+                <div class='player_place_cards'>
+                  <span>init</span>
+                </div>
+                <div class='player_cards'>
+                  <ul/>
+                </div>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </dl>
+  </fieldset>
 </form>
 <p>
-<button type="submit" id="start">start</button>
-<button type="submit" id="reverse">reverse</button>
+  <button type="submit" id="start">start</button>
+  <button type="submit" id="reverse">reverse</button>
+</p>
+<p>
+  <button type="submit" id="manual">next</button>
+</p>
+<p>
+  Interval:
+  <select style="width:70px" id="interval">
+    <option>manual</option>
+    <option>0</option>
+    <option>5</option>
+    <option>10</option>
+  </select>
 </p>
 <hr/>
 

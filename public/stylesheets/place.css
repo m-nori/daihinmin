@@ -20,7 +20,7 @@ button {
 }  
 .players {  
   margin: 0 auto;  
-  height:150px;
+  height:190px;
 }
 .players ul {
   text-align: center;
@@ -28,7 +28,7 @@ button {
 .players ul li {  
   display: inline-block;
   list-style: none;
-  width: 165px;
+  width: 180px;
   height:30px;
   margin-right: 10px;  
   margin-bottom:12px;
@@ -36,7 +36,11 @@ button {
 .player {
   border: solid 1px #ccc;
   height:125px;
-  width: 140px;
+  width: 150px;
+  margin-top:20px;
+}
+.select_player {
+  margin-top:0px;
 }
 .player_name {
   border-bottom: solid 1px #ccc;
@@ -46,7 +50,7 @@ button {
 .player_place_cards {
   border-bottom: solid 1px #ccc;
   font-size:11px;
-  height:32px;
+  height:42px;
 }
 .player_place_cards ul {
   text-align:center;
@@ -54,15 +58,15 @@ button {
   padding:0px;
 }
 .player_place_cards ul li {  
-  width: 20px;
+  width: 30px;
   margin: 1px;  
 }  
 .player_place_cards ul li img {  
-  width: 20px;
+  width: 27px;
 }  
 .player_place_cards span {  
-  height:32px;
-  line-height:32px;
+  height:42px;
+  line-height:42px;
   font-size:11px;
 }  
 .player_cards {
