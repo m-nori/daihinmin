@@ -199,9 +199,11 @@ class PlaceListener
       case
       when @turn == nil
         debug("turn nil")
+        @turn_player_index = @game_players.index{|p| p.id == player_id}
         false
       when @turn.player.id != player_id
         debug("plyayer id not match")
+        @turn_player_index = @game_players.index{|p| p.id == player_id}
         false
       when !CardUtiles.include?(@turn.player.cards, cards)
         debug("plyayer cards not include")

@@ -34,7 +34,7 @@
       </dt>
     </dl>
     <dl>
-  <div class='place'>
+  <div class='place drop-shadow'>
     <ul id='place_cards'>
     </ul>
   </div>
@@ -44,7 +44,7 @@
     <ul id='players'>
       <% @place.players.each do |player| %>
         <li>
-          <div class="player">
+          <div class="player drop-shadow lifted">
             <div class='player_name'>
               <span>
                 <%= User.find(player.user_id).name %>

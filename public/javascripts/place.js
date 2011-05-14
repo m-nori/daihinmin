@@ -128,18 +128,18 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
       var $cards = $("#place_cards");
       $cards.children().remove();
       $.each(list, function(i){
-        $cards.append("<li><img src='/images/cards/" + list[i].card.id + ".png'/></li>");
+        $cards.append("<li class='thumb'><img src='/images/cards/" + list[i].card.id + ".png'/></li>");
       });
     };
 
     var set_player = function(name) {
       var $player = players[name];
-      $player.find(".player_name").css("background-color", "black").css("color", "#fff");
+      $player.find(".player_name").css("background-color", "black").css("color", "white");
     };
 
     var un_set_player = function(name) {
       var $player = players[name];
-      $player.find(".player_name").css("background-color", "#fff").css("color", "black");
+      $player.find(".player_name").css("background-color", "").css("color", "black");
     };
 
     var next_turn = function() {

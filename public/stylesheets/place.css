@@ -7,7 +7,8 @@ button {
   height:100px;
   margin-top:20px;
   margin: 0 auto;  
-  margin-bottom:4px;
+  margin-top:30px;
+  margin-bottom:30px;
 }
 .place ul {
   text-align: center;
@@ -35,6 +36,7 @@ button {
 .player {
   border: solid 1px #ccc;
   height:125px;
+  width: 140px;
 }
 .player_name {
   border-bottom: solid 1px #ccc;
@@ -78,4 +80,90 @@ button {
 .player_cards ul li img {  
   width: 20px;
 }  
+
+.drop-shadow {
+    position:relative;
+    padding:1em; 
+    background:#fff;
+    -webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+    -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+    box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+}
+ 
+.drop-shadow:before,
+.drop-shadow:after {
+    content:"";
+    position:absolute; 
+    z-index:-2;
+}
+ 
+.drop-shadow p {
+    font-size:16px;
+    font-weight:bold;
+}
+ 
+ 
+.lifted {
+    -moz-border-radius:4px; 
+    border-radius:4px;
+}
+ 
+.lifted:before,
+.lifted:after { 
+    bottom:15px;
+    left:10px;
+    width:50%;
+    height:20%;
+    max-width:300px;
+    -webkit-box-shadow:0 15px 10px rgba(0, 0, 0, 0.7);   
+    -moz-box-shadow:0 15px 10px rgba(0, 0, 0, 0.7);
+    box-shadow:0 15px 10px rgba(0, 0, 0, 0.7);
+    -webkit-transform:rotate(-3deg);    
+    -moz-transform:rotate(-3deg);   
+    -ms-transform:rotate(-3deg);   
+    -o-transform:rotate(-3deg);
+    transform:rotate(-3deg);
+}
+ 
+.lifted:after {
+    right:10px; 
+    left:auto;
+    -webkit-transform:rotate(3deg);   
+    -moz-transform:rotate(3deg);  
+    -ms-transform:rotate(3deg);  
+    -o-transform:rotate(3deg);
+    transform:rotate(3deg);
+}
+
+.thumb {
+  position: relative;
+  display:inline-block;
+  background:#ccc;
+  -moz-box-shadow:0px 1px 5px rgba(0,0,0,0.2);
+  -webkit-box-shadow:0px 1px 5px rgba(0,0,0,0.2);
+  box-shadow:0px 1px 5px rgba(0,0,0,0.2);
+  z-index:3;
+}
+.thumb img{
+  position: relative;
+  z-index:3;
+  display:block;
+  border:3px solid #fff;
+  background: #ccc;
+}
+.thumb:after{
+  position:absolute;
+  top:0;
+  left:-2.5%;
+  z-index:2;
+  display:block;
+  content:"";
+  width:0%;
+  height:5%;
+  -moz-box-shadow:0px 102px 5px rgba(0,0,0,0.3);
+  -webkit-box-shadow:0px 102px 5px rgba(0,0,0,0.3);
+  box-shadow:0px 102px 5px rgba(0,0,0,0.3);
+  -moz-border-radius:50%;  
+  -webkit-border-radius:50%; 
+}
 
