@@ -33,6 +33,7 @@ class PlaceListener
 
   class PlaceListenerCore
     INTERVAL = 0.5
+    TIMEOUT = 10
 
     def initialize(place, logger)
       @place = place
@@ -66,12 +67,13 @@ class PlaceListener
       end
     end
 
-    def accept_cards(player_id, card_strings)
-      debug("accept_cards")
-      # TODO time out
+    def accept_cards(player_id, card_strings, time_out=false)
+      debug("accept_cards timeout:#{time_out}")
+      @accept = true
       cards = CardUtiles.to_hashs(card_strings)
       reset = false
-      if put_place?(player_id, cards)
+      if !time_out && put_place?(player_id, cards)
+        debug("success")
         update_turn(cards)
         case
         when @turn.player.cards.length == 0
@@ -87,6 +89,7 @@ class PlaceListener
           @turn_player_index = next_player(@turn_player_index)
         end
       else
+        debug("miss")
         miss_end_player(@game_players[@turn_player_index])
         @turn_player_index = next_player(@turn_player_index)
         reset = true
@@ -130,7 +133,7 @@ class PlaceListener
 
     def end_game
       debug("end_game")
-      end_player(@game_players[0])
+      end_player(@game_players[@turn_player_index])
       @last_ranks = @ranks
       @game.status = 1
       @game.ranks  = @ranks
@@ -153,7 +156,9 @@ class PlaceListener
       send_data = {:player => turn_player.user.name, 
                    :place_cards => @game_place,
                    :place_info => @game.place_info}
+      @accept = false
       send_websocket("start_turn", send_data.to_json)
+      timeout_check
     end
 
     def update_turn(cards)
@@ -241,20 +246,24 @@ class PlaceListener
     def miss_end_player(player)
       debug("miss_end_player")
       rank = nil
-      @ranks.length.downto(1) do |i|
-        unless @ranks[i-1]
-          rank = Rank.new(:rank => i)
-          rank.game = @game
-          rank.player = player
-          @ranks[i-1] = rank
-          break
+      if player.cards.length != 0
+        @ranks.length.downto(1) do |i|
+          unless @ranks[i-1]
+            rank = Rank.new(:rank => i)
+            rank.game = @game
+            rank.player = player
+            @ranks[i-1] = rank
+            break
+          end
         end
+        player.cards = []
+        player.save
+        send_data = {:player => player.user.name,
+                     :rank => rank}
+        send_websocket("end_player", send_data.to_json)
+      else
+        debug("alredy miss")
       end
-      player.cards = []
-      player.save
-      send_data = {:player => player.user.name,
-                   :rank => rank}
-      send_websocket("end_player", send_data.to_json)
       sleep(INTERVAL)
     end
 
@@ -275,11 +284,11 @@ class PlaceListener
       if @game_count == 1
         start_player = (Player.joins(:cards).where(:place_id => @place.id) &
                         Card.where(:mark => 2).where(:number => 3))[0]
+        i = players.index(start_player)
       else
         first_player_id = @last_ranks.last.player_id
-        start_player = players.index{|p| p.id == first_player_id}
+        i = players.index{|p| p.id == first_player_id}
       end
-      i = players.index(start_player)
       m = players.length
       if i == 0
         list = players
@@ -299,6 +308,7 @@ class PlaceListener
     end
 
     def change(a, b, change_count)
+      debug("#{a.user.name}<->#{b.user.name}")
       a_sort_cards = CardUtiles.sort(a.cards)
       b_sort_cards = CardUtiles.sort(b.cards).reverse
       a_change = a_sort_cards.slice!(0,change_count)
@@ -322,6 +332,24 @@ class PlaceListener
         next_player(index)
       else
         index
+      end
+    end
+
+    def timeout_check
+      Thread.new do
+        debug("timeout_check")
+        begin
+          timeout(TIMEOUT) do
+            (TIMEOUT+1).times do |i|
+              debug("check:#{i}")
+              break if @accept
+              sleep 1
+            end
+          end
+        rescue Timeout::Error
+          debug("timeout:#{@accept}")
+          accept_cards(@turn.player.id, [], true) unless @accept
+        end
       end
     end
 
