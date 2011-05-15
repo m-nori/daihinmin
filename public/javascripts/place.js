@@ -42,8 +42,8 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
   dd.place.Show = (function() {
     var Constr;
     var players = null;
-    var start_flg = false;
     var reverse_flg = false;
+    var start_flg = false;
     var manual = true;
     var interval = 0;
 
@@ -152,13 +152,14 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
       var val = $("#interval").val();
       if(val == "manual") {
         manual = true;
-        if(start_flg) {
-          $("#manual").attr('disabled', false);
-        }
       } else {
+        var now = $("#manual").attr('disabled');
         manual = false;
         interval = parseInt(val) * 1000;
         $("#manual").attr('disabled', true);
+        if(start_flg && now) {
+          setTimeout(next_turn, interval);
+        }
       }
     };
 
@@ -187,8 +188,8 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
       },
 
       start_place : function(json) {
-        start_flg = true;
         $("#reverse").attr('disabled', false);
+        start_flg = true
         interval_change_exec();
       },
 
@@ -196,11 +197,19 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
         init_place_and_player();
         set_place();
         set_players_card();
-        next_turn();
+        if(!manual) {
+          setTimeout(next_turn, interval);
+        } else {
+          $("#manual").attr('disabled', false);
+        }
       },
 
       end_game : function(json) {
-        next_turn();
+        if(!manual) {
+          setTimeout(next_turn, interval);
+        } else {
+          $("#manual").attr('disabled', false);
+        }
       },
 
       start_turn : function(json) {
@@ -221,6 +230,8 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
         }
         if(!manual) {
           setTimeout(next_turn, interval);
+        } else {
+          $("#manual").attr('disabled', false);
         }
       },
 
@@ -229,6 +240,7 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
       },
 
       next : function(json) {
+        $("#manual").attr('disabled', true);
         next_turn();
       },
 
