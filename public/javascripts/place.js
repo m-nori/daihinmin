@@ -221,6 +221,8 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
         var info = "";
         if(json.turn_cards.length == 0) {
           info = "PASS";
+        } else {
+          set_place_cards(json.turn_cards);
         }
         set_player_place_cards(json.player, info, json.turn_cards);
         un_set_player(json.player);
