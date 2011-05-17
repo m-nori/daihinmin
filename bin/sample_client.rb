@@ -74,8 +74,13 @@ def create_yaku(hand)
   yaku = {}
   pares = create_pare(hand)  
   pares.each do |pare|
+    next if pare == 1
     yaku[pare.length] = [] unless yaku.key?(pare.length)
     yaku[pare.length] << pare
+  end
+  yaku[1] = []
+  hand.each do |card|
+    yaku[1] << [card]
   end
   jokers = hand.find_all{|h| h[:joker] }
   jokers.each do |joker|
@@ -85,14 +90,18 @@ def create_yaku(hand)
     end
     yaku.update(yaku_add){|k,v1,v2| v1 + v2 }
   end
+  p yaku
   yaku
 end
 
 def select_cards(target, list, revolution)
   resut = []
   list.each do |cards|
+    puts "compare #{target.first}<=>#{cards.first}"
     if CardUtiles.compare_to(target.first, cards.first, revolution) == -1
+      puts "OK:#{cards}"
       resut = cards
+      break
     end
   end
   resut
@@ -115,19 +124,23 @@ EM.run do
   hand = nil
   yaku = nil
   WebsocketClient.connect("localhost", 8081) do |data|
-    json = JSON.parse(data[0])
+    begin
+      json = JSON.parse(data[0])
+    rescue
+      puts "not json"
+      next
+    end
     next if json["place"] != place_id.to_i
     case json["operation"]
     when "start_place"
       player_accsesor = PlayerAccsesor.new("http://localhost:3000", user_name, password, place_id)
     when "end_place"
       exit(0)
-    when "start_game"
-      hand = json_cards_to_hash(player_accsesor.get_hand)
-      hand = CardUtiles.sort(hand)
-    when "end_game"
-      hand = nil
-      yaku = nil
+    # when "start_game"
+      # hand = CardUtiles.sort(hand)
+    # when "end_game"
+      # hand = nil
+      # yaku = nil
     when "start_turn"
       if json["player"] == user_name
         # place_info
@@ -136,6 +149,7 @@ EM.run do
         place_cards = json_cards_to_hash(json["place_cards"])
         # init
         put_cards = []
+        hand = json_cards_to_hash(player_accsesor.get_hand)
         hand = CardUtiles.sort(hand, revolution)
         yaku = create_yaku(hand)
         # select card
@@ -155,9 +169,9 @@ EM.run do
         end
         player_accsesor.post_cards(put_cards)
       end
-    when "end_turn"
-      hand = json_cards_to_hash(player_accsesor.get_hand)
-      hand = CardUtiles.sort(hand)
+    # when "end_turn"
+      # hand = json_cards_to_hash(player_accsesor.get_hand)
+      # hand = CardUtiles.sort(hand)
     else
       puts json["operation"]
     end

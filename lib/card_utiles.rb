@@ -15,15 +15,26 @@ class CardUtiles
     cards.all?{|card| hand.any?{|h| h.equal_card?(card)}}
   end
 
-  def self.reject(cards, target)
+  def self.reject(cards, _target)
+    target = _target.clone
     cards.reject{|c| 
-      target.any?{|t| c[:joker] == t[:joker] && c[:number] == t[:number] && c[:mark] == t[:mark] }
+      i = target.index{|t| c[:joker] == t[:joker] && c[:number] == t[:number] && c[:mark] == t[:mark] }
+      if i
+        target.delete_at(i)
+        true
+      end
     }
   end
 
-  def self.find_all(cards, target)
+  def self.find_all(cards, _target)
+    target = _target.clone
     cards.find_all{|c| 
       target.any?{|t| c[:joker] == t[:joker] && c[:number] == t[:number] && c[:mark] == t[:mark] }
+      i = target.index{|t| c[:joker] == t[:joker] && c[:number] == t[:number] && c[:mark] == t[:mark] }
+      if i
+        target.delete_at(i)
+        true
+      end
     }
   end
 
@@ -32,7 +43,11 @@ class CardUtiles
     when cards.length <= 1
       true
     when cards.length != cards.uniq.length
-      false
+      if cards.length == 2 && cards[0][:joker]
+        true
+      else
+        false
+      end
     when self.pare?(cards)
       true
     when self.kaidan?(cards)
@@ -80,8 +95,13 @@ class CardUtiles
 
   def self.pare?(cards)
     not_jokers = cards.reject{|card| card[:joker]}
-    n = not_jokers[0][:number]
-    not_jokers.all?{|card| n == card[:number]}
+    if not_jokers.length == 0
+      # joker+joker
+      true
+    else
+      n = not_jokers[0][:number]
+      not_jokers.all?{|card| n == card[:number]}
+    end
   end
 
   def self.kaidan?(cards)

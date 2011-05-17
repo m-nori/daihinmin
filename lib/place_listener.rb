@@ -7,7 +7,6 @@ class PlaceListener
     @@logger ||= logger
     @@hash[id.to_s] = core
     core.start
-    core.next_turn
   end
 
   def self.next_turn(id)
@@ -76,7 +75,7 @@ class PlaceListener
         debug("success")
         update_turn(cards)
         case
-        when @turn.player.cards.length == 0
+        when @game_players[@turn_player_index].cards.length == 0
           end_player(@game_players[@turn_player_index])
           @turn_player_index = next_player(@turn_player_index)
           reset = true
@@ -186,10 +185,12 @@ class PlaceListener
     end
 
     def reset_place
-      debug("reset_place")
+      debug("reset_place:place=#{@game_place}")
       # set revolution
       if @game_place.length >= 4 && CardUtiles.pare?(@game_place)
         @revolution = !@revolution
+        @game.place_info = get_place_info
+        @game.save
       end
       # reset place
       @game_place = []
@@ -211,6 +212,9 @@ class PlaceListener
       when !CardUtiles.include?(@turn.player.cards, cards)
         debug("plyayer cards not include")
         false
+      when @game_place.length != 0 && cards.length != 0 && @game_place.length != cards.length
+        debug("length miss")
+        false
       when !CardUtiles.yaku?(cards)
         debug("yaku miss")
         false
@@ -229,11 +233,11 @@ class PlaceListener
       debug("end_player")
       rank = nil
       @ranks.length.times do |i|
-        unless @ranks[i-1]
-          rank = Rank.new(:rank => i)
+        unless @ranks[i]
+          rank = Rank.new(:rank => i+1)
           rank.game = @game
           rank.player = player
-          @ranks[i-1] = rank
+          @ranks[i] = rank
           break
         end
       end
@@ -299,11 +303,20 @@ class PlaceListener
     end
 
     def card_change
-      change(@game_players.find{|p| p.id == @last_ranks[0].player_id},
-        @game_players.find{|p| p.id == @last_ranks[@last_ranks.length - 1].player_id},
+      debug("card_change")
+      debug("last_ranks:#{@last_ranks}")
+      sleep INTERVAL
+      change(
+        @game_players.find{|p| 
+          p.id == @last_ranks[0].player_id},
+        @game_players.find{|p|
+          p.id == @last_ranks[@last_ranks.length - 1].player_id},
         2)
-      change(@game_players.find{|p| p.id == @last_ranks[1].player_id},
-        @game_players.find{|p| p.id == @last_ranks[@last_ranks.length - 2].player_id},
+      change(
+        @game_players.find{|p| 
+          p.id == @last_ranks[1].player_id},
+        @game_players.find{|p| 
+          p.id == @last_ranks[@last_ranks.length - 2].player_id},
         1)
     end
 
@@ -340,10 +353,9 @@ class PlaceListener
         debug("timeout_check")
         begin
           timeout(TIMEOUT) do
-            (TIMEOUT+1).times do |i|
-              debug("check:#{i}")
+            loop do
               break if @accept
-              sleep 1
+              sleep 0.5 
             end
           end
         rescue Timeout::Error

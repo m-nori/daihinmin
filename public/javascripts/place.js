@@ -106,7 +106,9 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
     };
 
     var reset_place_and_player = function () {
-      set_place_cards([]);
+      var $cards = $("#place_cards");
+      $cards.children().remove();
+      $cards.append("<li><span style='line-height:80px;'>RESET</span></li>");
       $(".player").each(function() {
         var name = $(this).find(".player_name span").text().trim()
         un_set_player(name)
@@ -191,6 +193,11 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
         $("#reverse").attr('disabled', false);
         start_flg = true
         interval_change_exec();
+        if(!manual) {
+          setTimeout(next_turn, 1500);
+        } else {
+          $("#manual").attr('disabled', false);
+        }
       },
 
       start_game : function(json) {
@@ -228,12 +235,20 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
         un_set_player(json.player);
         set_players_card();
         if(json.reset_place) {
-          reset_place_and_player();
-        }
-        if(!manual) {
-          setTimeout(next_turn, interval);
+          setTimeout(function() {
+            reset_place_and_player();
+            if(!manual) {
+              setTimeout(next_turn, interval);
+            } else {
+              $("#manual").attr('disabled', false);
+            }
+          },500);
         } else {
-          $("#manual").attr('disabled', false);
+          if(!manual) {
+            setTimeout(next_turn, interval);
+          } else {
+            $("#manual").attr('disabled', false);
+          }
         }
       },
 
