@@ -127,10 +127,10 @@ AIとの通信は`WebSocket`と`HTTP-API`を使用する。
 
 オペレーション毎の仕様は以下のようになっている。
 
-1. start_place
-  * 場の開始時に送信される。
+#### start_place
+場の開始時に送信される。
 
-    `sample:`{"place":{"created_at":"2011-05-19T10:34:49Z","game_count":3,"id":26,"title":"Place2","updated_at":"2011-05-19T10:34:49Z"},"operation":"start_place","place":26}
+    {"place":{"created_at":"2011-05-19T10:34:49Z","game_count":3,"id":26,"title":"Place2","updated_at":"2011-05-19T10:34:49Z"},"operation":"start_place","place":26}
 
 2. start_game
   * ゲームの開始時に送信される。
