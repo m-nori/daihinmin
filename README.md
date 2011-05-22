@@ -684,7 +684,7 @@ class PlayerAccsesor
 end
 ```
 
-フロー制御の使用：
+フロー制御：
 
 ``` ruby
 EM.run do
