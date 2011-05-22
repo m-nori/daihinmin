@@ -304,11 +304,12 @@ AIとの通信は`WebSocket`と`プレイヤー用API`を使用する。
     "operation":"end_place",
     "place":26}
 
-## プレイヤー用APIAPIの仕様
+## プレイヤー用APIの仕様
 プレイヤーが自分からアクセスすることで使用することが出来るHTTPのAPI。
 
 ### ログイン
 APIを使用するためにはこのURLにアクセスしてログインを行う必要がある。
+
 現時点ではログイン情報をCookieに保存するため、Cookie保存を行える言語で実装する必要がある。
 
 #### http://#{サーバ}/login
@@ -324,7 +325,9 @@ APIを使用するためにはこのURLにアクセスしてログインを行�
 
 ### 受信
 データの受信はJSONとXMLにて行える。（JSON推奨）
+
 URLに".json"を付与した場合JSON、".xml"を付与した場合XMLとなる。
+
 HTTPメソッドは`get`。
 
 #### http://#{サーバ}/get_hand.(json or xml)
@@ -428,6 +431,7 @@ HTTPメソッドは`get`。
 
 ### 送信
 データの送信フォーマットは未定。（現在はクエリーパラメータを使用）
+
 HTTPメソッドは`post`。
 
 #### http://#{サーバ}/post_cards
@@ -546,4 +550,169 @@ start_turnの次のみプレイヤーが場にカードを出すことで次の�
   <tr>
 </table>
 
+* No.4〜12までの処理をGame回数分実行する。
+* No.6〜9までの処理をGameが終了するまで実行する。
+* No.8はNo.7の処理にてプレイヤーが終了した場合のみ発生する。
+
+## AIの実装方法
+AIを実装するためには以下機能保持している言語で実装する必要がある。
+
+1. WebSocketの受信
+  * サーバからの通知を受信するために必要。
+  * Socket通信ができる言語であれば実装可能
+2. HTTP通信
+  * APIにアクセスするために必要。
+3. Cookieの保存
+  * APIへのログインにて必要。
+  * JavaなどではApatchのHttpClient等を使用することで実装可能
+4. スレッド処理
+  * サーバからの通知は非同期で行われるため、通知に対する処理は別スレッドで処理することが望ましい。
+
+### サンプル
+
+WebSocketの受信：
+
+``` ruby
+require "EventMachine"
+
+class WebsocketClient < EventMachine::Connection
+  include EventMachine::Deferrable
+  
+  def initialize
+    @callbacks = []
+  end
+  
+  def self.connect(host, port, callback = nil, &block)
+    EventMachine::connect(host, port, self) do |conn|
+      conn.add_callback(callback) unless callback.nil?
+      conn.add_callback(nil, &block) if block_given?
+    end
+  end  
+  
+  def add_callback callback = nil, &block
+    @callbacks.push(callback || block)
+  end
+
+  def post_init
+    request = "GET / HTTP/1.1\r\n"
+                request << "Upgrade: WebSocket\r\n"
+                request << "Connection: Upgrade\r\n"
+                request << "Host: 127.0.0.1\r\n"
+                request << "Origin: TODO\r\n"
+    request << "\r\n"
+    send_data request
+    @data = ""
+    @handshake = false
+    @index = 0
+  end
+
+  def receive_data data
+    @data << data
+    if !@handshake
+      if @data =~ /[\n][\r]*[\n]/m
+        if @data =~ /HTTP\/1.1 101 Web Socket Protocol Handshake/
+          @handshake = true
+          @data = ""
+        else
+          close_connection  
+        end
+      end  
+    elsif @data =~ /^\x00(.*)\xff$/m
+      @data.scan(/^\x00(.*)\xff$/m) do |message|
+        @callbacks.each do |callback|
+          callback.call message
+        end  
+      end  
+      @data = ""
+      @index += 1;
+    end
+  end
+
+  def unbind
+    puts "A connection has terminated"
+  end    
+end
+```
+
+プレイヤーAPIの使用：
+
+``` ruby
+require 'Mechanize'
+
+class PlayerAccsesor
+  LOGIN_URL = "/login"
+  GET_HAND_URL = "/operations/get_hand.json"
+  OPERATION_URL = "/operations"
+
+  def initialize(url, user_name, password, place_id)
+    @url = url
+    @agent = Mechanize.new
+    @agent.log = Logger.new($stderr)
+    @agent.log.level = Logger::INFO
+
+    # login execute
+    page = @agent.get(@url + LOGIN_URL)
+    form = page.forms.first
+    form["name"] = user_name
+    form["password"] = password
+    form["place_id"] = place_id
+    form.submit
+  end
+
+  def get_hand
+    json = @agent.get_file(GET_HAND_URL)
+    JSON.parse(json)
+  end
+
+  def post_cards(cards)
+    page = @agent.get(OPERATION_URL)
+    form = page.forms.first
+    cards.each_with_index do |card,i|
+      form["card_#{i}"] = card_to_string(card)
+    end
+    form.submit
+  end
+
+  private
+  def card_to_string(card)
+    if card[:joker]
+      "joker"
+    else
+      "#{card[:mark]}-#{card[:number]}"
+    end
+  end
+end
+```
+
+フロー制御の使用：
+``` ruby
+EM.run do
+  player_accsesor = PlayerAccsesor.new("http://localhost:3000", user_name, password, place_id)
+  WebsocketClient.connect("localhost", 8081) do |data|
+    begin
+      json = JSON.parse(data[0])
+    rescue
+      puts "not json"
+      next
+    end
+    next if json["place"] != place_id.to_i
+    when "end_place"
+      exit(0)
+    when "start_turn"
+      Thread.new do
+        # 手札を作る
+        player_accsesor.post_cards(put_cards)
+      end
+    else
+      puts json["operation"]
+    end
+  end
+end
+```
+
+## TODO
+
+* ゲーム結果表示画面作成
+* 手動プレイ用画面作成
+* サンプルに説明入れる…
 
