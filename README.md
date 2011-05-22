@@ -61,7 +61,7 @@
 
 ## ルール
 
-ルールは`シンプル`にすることによりAI作成の難易度は下げている。
+ルールはシンプルにすることによりAI作成の難易度は下げている。
 
 ### 基本ルール
 
@@ -93,24 +93,15 @@
 
 ### 構成
 
-<table>
-  <tr>
-    <td>開発言語</td>
-    <td>Ruby、JavaScript</td>
-  </tr>
-  <tr>
-    <td>フレームワーク</td>
-    <td>Ruby on Rails</td>
-  </tr>
-  <tr>
-    <td>DB</td>
-    <td>MySQL</td>
-  </tr>
-</table>
+* 開発言語
+   * Ruby、JavaScript
+* フレームワーク
+   * Ruby on Rails
+* DB
+   * MySQL
 
 ### モデル構成
 
-<img src='https://github.com/m-nori/daihinmin/blob/master/doc/model.jpg' alt='モデルイメージ'>
-
+![モデルイメージ](doc/model.jpg "モデルイメージ")
 
 
