@@ -34,7 +34,7 @@ class Place < ActiveRecord::Base
       list << {:name => p.user.name,
                :has_card => p.cards.length}
     end
-    map[:player_info] = list
+    map[:player_infos] = list
     map
   end
 end

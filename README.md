@@ -65,9 +65,9 @@
 
 ### 基本ルール
 
-* 1Placeにつき50Game行う。
-* 1Gameにつき5Userで対戦を行う。
-* 5Userの内訳は大富豪、富豪、平民、貧民、大貧民
+* 1Placeにつき50ゲーム行う。
+* ゲームは5ユーザで対戦を行う。
+* 5ユーザの内訳は大富豪、富豪、平民、貧民、大貧民
 * 大富豪・大貧民は2枚、富豪・貧民は1枚のカード交換を行う。
 * 交換は、最弱カードと最強カードを自動で交換する。
 * カードの枚数はジョーカーを2枚含めた54枚。
@@ -104,7 +104,7 @@
 
 [モデルイメージ](https://github.com/m-nori/daihinmin/blob/master/doc/model.jpg "モデルイメージ")
 
-### AIとの通信
+### 通信方式
 
 AIとの通信は`WebSocket`と`HTTP-API`を使用する。
 
@@ -115,15 +115,23 @@ AIとの通信は`WebSocket`と`HTTP-API`を使用する。
   * 手札の取得や、場にカードを出す為に使用する。
     プレイヤー毎に個別に処理する必要が有るため、使用するためにはユーザ認証を行ってから仕様する必要がある。
 
-### WebScoket
+## WebScoket
 
 ゲームの進行状況に合わせてサーバ側から送信される。
 データはJSON形式となり、すべてのデータに以下の情報が含まれる。
+
+### 共通情報
 
 * `place`
   * 場のID。自分の参加している場以外の情報も送信されてくるため、自分の場かどうかの判断をしてから処理する必要がある。
 * `operation`
   * 行われたオペレーション。処理の判定に使用する。
+* `card`
+  1. joker:ジョーカーかどうかのフラグ。trueの場合ジョーカー。
+  2. mark:カードのマーク。1〜4でどれが何かは決めていない。
+  3. number:カードの数字。1〜13。
+
+### 各オペレーションのJSON
 
 #### start_place
 場の開始時に送信される。
@@ -201,6 +209,11 @@ AIとの通信は`WebSocket`と`HTTP-API`を使用する。
 #### end_player
 プレイヤーが上がった場合、又はミスした場合に送信される。
 
+* `player`
+  * 対象のプレイヤーの名前。
+* `rank`
+  * 対象のプレイヤーのランク情報。rank.rank.rankが順位になる。
+
 例：
 
     {"player":"User5",
@@ -216,6 +229,13 @@ AIとの通信は`WebSocket`と`HTTP-API`を使用する。
 
 #### end_turn
 ターンが終了したあと送信される。
+
+* `player`
+  * 対象のプレイヤーの名前。
+* `turn_cards`
+  * プレイヤーが出したカード。配列になっており、パスされた場合は空の配列となる。
+* `reset_place`
+  * 場がリセットされるかどうかのフラグ。リセットされる場合true。
 
 例：
 
@@ -245,6 +265,9 @@ AIとの通信は`WebSocket`と`HTTP-API`を使用する。
 #### end_game
 ゲームが終了したあと送信される。
 
+* `game`
+  * ゲームの情報。
+
 例：
 
     {"game":{
@@ -262,6 +285,9 @@ AIとの通信は`WebSocket`と`HTTP-API`を使用する。
 #### end_place
 場が終了したあと送信される。
 
+* `place`
+  * 場の情報。
+
 例：
 
     {"place":{
@@ -273,4 +299,147 @@ AIとの通信は`WebSocket`と`HTTP-API`を使用する。
     },
     "operation":"end_place",
     "place":26}
+
+## HTTP-API
+プレイヤーが自分からアクセスすることで使用することが出来るAPI。
+
+### ログイン
+APIを使用するためにはこのURLにアクセスしてログインを行う必要がある。
+現時点ではログイン情報をCookieに保存するため、Cookie保存を行える言語で実装する必要がある。
+
+#### http://#{サーバ}/login
+ユーザの認証を行う。
+クエリーパラメータは以下のとおり。
+
+* `name`
+  * ユーザ名
+* `password`
+  * パスワード
+* `place_id`
+  * 場のID
+
+### 受信
+データの受信はJSONとXMLにて行える。（JSON推奨）
+URLに".json"を付与した場合JSON、".xml"を付与した場合XMLとなる。
+HTTPメソッドは`get`。
+
+#### http://#{サーバ}/get_hand.(json or xml)
+手札の取得を行う。
+
+* `cards`
+  * カードの配列。JSONの場合は配列のみ。
+* `card`
+  * カードの詳細情報。
+
+例：JSON
+
+    [
+      {"card":{"id":20,"joker":false,"mark":2,"number":7}},
+      {"card":{"id":19,"joker":false,"mark":2,"number":6}},
+      {"card":{"id":6,"joker":false,"mark":1,"number":6}},
+      {"card":{"id":22,"joker":false,"mark":2,"number":9}}
+    ]
+
+例：XML
+
+    <cards type="array">
+      <card>
+        <id type="integer">20</id>
+        <joker type="boolean">false</joker>
+        <mark type="integer">2</mark>
+        <number type="integer">7</number>
+      </card>
+      <card>
+        <id type="integer">19</id>
+        <joker type="boolean">false</joker>
+        <mark type="integer">2</mark>
+        <number type="integer">6</number>
+      </card>
+      <card>
+        <id type="integer">6</id>
+        <joker type="boolean">false</joker>
+        <mark type="integer">1</mark>
+        <number type="integer">6</number>
+        </card>
+      <card>
+        <id type="integer">22</id>
+        <joker type="boolean">false</joker>
+        <mark type="integer">2</mark>
+        <number type="integer">9</number>
+      </card>
+    </cards>
+
+#### http://#{サーバ}/get_place_info.(json or xml)
+場の情報を取得を行う。
+
+* `game_count`
+  * ゲームの実行回数。
+* `player_count`
+  * 参加しているプレイヤーの人数。
+* `player_infos`
+  * プレイヤーの情報の配列。JSONの場合は配列のみ。
+* `player_info`
+  * プレイヤーの情報。ユーザ名と持っているカードの残数。
+
+例：JSON
+
+    {"game_count":10,
+    "player_count":5,
+    "player_infos":[
+      {"name":"User1","has_card":4},
+      {"name":"User2","has_card":1},
+      {"name":"User3","has_card":6},
+      {"name":"User4","has_card":7},
+      {"name":"User5","has_card":4}
+    ]}
+
+例：XML
+
+    <hash>
+      <game-count type="integer">10</game-count>
+      <player-count type="integer">5</player-count>
+      <player-infos type="array">
+        <player-info>
+          <name>User1</name>
+          <has-card type="integer">4</has-card>
+        </player-info>
+        <player-info>
+          <name>User2</name>
+          <has-card type="integer">1</has-card>
+        </player-info>
+        <player-info>
+          <name>User3</name>
+          <has-card type="integer">6</has-card>
+        </player-info>
+        <player-info>
+          <name>User4</name>
+          <has-card type="integer">7</has-card>
+        </player-info>
+        <player-info>
+          <name>User5</name>
+          <has-card type="integer">4</has-card>
+        </player-info>
+      </player-infos>
+    </hash>
+
+### 送信
+データの送信フォーマットは未定。（現在はクエリーパラメータを使用）
+HTTPメソッドは`post`。
+
+#### http://#{サーバ}/post_cards
+手札を場に出す。
+クエリーパラメータは以下のとおり。
+
+* card_0 〜 5
+  * 出すカードを一つずつ指定して格納する。
+    パスの場合はクエリーパラメータを指定しないで出す。
+  * 格納する値の使用は以下のとおり。
+    * `ジョーカーの場合：`joker
+    * `ジョーカー以外の場合：`#{マーク}-#{数字}
+
+例：ハート3、ダイヤ3、ジョーカー
+
+    card_0 => "2-3"
+    card_0 => "3-3"
+    card_0 => "joker"
 
