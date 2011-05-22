@@ -685,6 +685,7 @@ end
 ```
 
 フロー制御の使用：
+
 ``` ruby
 EM.run do
   player_accsesor = PlayerAccsesor.new("http://localhost:3000", user_name, password, place_id)
