@@ -102,6 +102,6 @@
 
 ### モデル構成
 
-![モデルイメージ](https://github.com/m-nori/daihinmin/blob/master/doc/model.jpg "モデルイメージ")
+[モデルイメージ](https://github.com/m-nori/daihinmin/blob/master/doc/model.jpg "モデルイメージ")
 
 
