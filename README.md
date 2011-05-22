@@ -26,7 +26,7 @@
 ### 画面
 
 * 各種管理用画面
-* ゲーム状況表示画面
+* ゲーム進行画面
 * ゲーム結果表示画面
 * 手動プレイ用画面
 
@@ -99,6 +99,8 @@
    * Ruby on Rails
 * DB
    * MySQL
+* 対象ブラウザ
+  * GoogleChrome、FireFox4
 
 ### モデル構成
 
@@ -106,16 +108,18 @@
 
 ### 通信方式
 
-AIとの通信は`WebSocket`と`HTTP-API`を使用する。
+AIとの通信は`WebSocket`と`プレイヤー用API`を使用する。
+
+[通信イメージ](https://github.com/m-nori/daihinmin/blob/master/doc/image.jpg "通信イメージ")
 
 * WebSocket
   * 全プレイヤーに共通的に提供できる情報を送信する為に使用する。
     ゲームの開始通知やターンの開始通知などを全プレイヤーに送信する。
-* HTTP-API
-  * 手札の取得や、場にカードを出す為に使用する。
+* プレイヤー用API
+  * 手札の取得や、場にカードを出す為に使用するHTTP通信のAPI。
     プレイヤー毎に個別に処理する必要が有るため、使用するためにはユーザ認証を行ってから仕様する必要がある。
 
-## WebScoket
+## WebScoketのデータ仕様
 
 ゲームの進行状況に合わせてサーバ側から送信される。
 データはJSON形式となり、すべてのデータに以下の情報が含まれる。
@@ -300,8 +304,8 @@ AIとの通信は`WebSocket`と`HTTP-API`を使用する。
     "operation":"end_place",
     "place":26}
 
-## HTTP-API
-プレイヤーが自分からアクセスすることで使用することが出来るAPI。
+## プレイヤー用APIAPIの仕様
+プレイヤーが自分からアクセスすることで使用することが出来るHTTPのAPI。
 
 ### ログイン
 APIを使用するためにはこのURLにアクセスしてログインを行う必要がある。
@@ -442,4 +446,104 @@ HTTPメソッドは`post`。
     card_0 => "2-3"
     card_0 => "3-3"
     card_0 => "joker"
+
+## ゲームの進行
+ゲームの進行は`ゲーム進行画面`によって行われる。
+
+start_turn以外のタイミングでゲーム進行画面がサーバにnext_turn通知を行うことで次の処理へと遷移する。
+
+start_turnの次のみプレイヤーが場にカードを出すことで次の処理へと遷移する。（ただしタイムアウトした場合は強制的に次の処理へ進む）
+
+これはゲームの進行を画面から確認できるようにするためのものである。
+
+### フロー
+
+<table>
+  <tr>
+    <th>No.</th>
+    <th>サーバ</th>
+    <th>ゲーム進行画面</th>
+    <th>プレイヤー</th>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td></td>
+    <td>start通知を行う。</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>2</td>
+    <td>WebSocket:start_place</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>3</td>
+    <td></td>
+    <td>next_turn通知を行う。</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>4</td>
+    <td>WebSocket:start_game</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>5</td>
+    <td></td>
+    <td>next_turn通知を行う。</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>6</td>
+    <td>WebSocket:start_turn</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>7</td>
+    <td></td>
+    <td></td>
+    <td>対象プレイヤーが場にカードを出す。</td>
+  </tr>
+  <tr>
+    <td>8</td>
+    <td>WebSocket:end_player</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>9</td>
+    <td>WebSocket:end_turn</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>10</td>
+    <td></td>
+    <td>next_turn通知を行う。</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>11</td>
+    <td>WebSocket:end_game</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>12</td>
+    <td></td>
+    <td>next_turn通知を行う。</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>13</td>
+    <td>WebSocket:end_place</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+</table>
+
 
