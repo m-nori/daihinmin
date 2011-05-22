@@ -125,12 +125,19 @@ AIとの通信は`WebSocket`と`HTTP-API`を使用する。
 * operation
   * 行われたオペレーション。処理の判定に使用する。
 
-オペレーション毎の仕様は以下のようになっている。
-
 #### start_place
 場の開始時に送信される。
 
+例：
+
     {"place":{"created_at":"2011-05-19T10:34:49Z","game_count":3,"id":26,"title":"Place2","updated_at":"2011-05-19T10:34:49Z"},"operation":"start_place","place":26}
+
+#### start_game
+ゲームの開始時に送信される。
+
+例：
+
+    {"game":{"created_at":"2011-05-21T01:21:50Z","id":269,"no":1,"place_id":26,"place_info":"Nomal","status":0,"updated_at":"2011-05-21T01:21:50Z"},"operation":"start_game","place":26}
 
 2. start_game
   * ゲームの開始時に送信される。
