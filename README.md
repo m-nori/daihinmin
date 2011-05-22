@@ -38,23 +38,23 @@
     <th>意味</th>
   </tr>
   <tr>
-    <td>User</td>
+    <td>`User`</td>
     <td>ゲームに参加するユーザ。</td>
   </tr>
   <tr>
-    <td>Place</td>
+    <td>`Place`</td>
     <td>参加するユーザとゲームを保持する場のこと。場の中でゲームが行われる。</td>
   </tr>
   <tr>
-    <td>Player</td>
+    <td>`Player`</td>
     <td>場に参加するユーザのこと。</td>
   </tr>
   <tr>
-    <td>Game</td>
+    <td>`Game`</td>
     <td>場の中で行われるゲーム。大富豪大貧民の基本単位。</td>
   </tr>
   <tr>
-    <td>Turn</td>
+    <td>`Turn`</td>
     <td>ゲームの中でのプレイヤーの一行動。</td>
   </tr>
 </table>
