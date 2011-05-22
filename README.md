@@ -139,24 +139,33 @@ AIとの通信は`WebSocket`と`HTTP-API`を使用する。
 
     {"game":{"created_at":"2011-05-21T01:21:50Z","id":269,"no":1,"place_id":26,"place_info":"Nomal","status":0,"updated_at":"2011-05-21T01:21:50Z"},"operation":"start_game","place":26}
 
-2. start_game
-  * ゲームの開始時に送信される。
-  * `sample:`
-3. start_turn
-  * ターンの開始時に送信される。
-  * `sample:`
-4. end_player
-  * ゲームの開始時に送信される。
-  * `sample:`
-5. end_turn
-  * ゲームの開始時に送信される。
-  * `sample:`
-6. end_game
-  * ゲームの開始時に送信される。
-  * `sample:`
-7. end_place
-  * ゲームの開始時に送信される。
-  * `sample:`
 
+#### start_turn
+ターンの開始時に送信される。
+
+例：
+
+    {"player":"User3","place_cards":[],"place_info":"Nomal","operation":"start_turn","place":26}
+
+#### end_player
+プレイヤーが上がった場合、又はミスした場合に送信される。
+
+例：
+
+#### end_turn
+ターンが終了したあと送信される。
+
+例：
+    {"player":"User3","turn_cards":[{"card":{"created_at":"2011-04-20T13:32:09Z","id":34,"joker":false,"mark":3,"number":8,"updated_at":"2011-04-20T13:32:09Z"}},{"card":{"created_at":"2011-04-20T13:32:09Z","id":47,"joker":false,"mark":4,"number":8,"updated_at":"2011-04-20T13:32:09Z"}}],"reset_place":true,"operation":"end_turn","place":26}
+
+#### end_game
+ゲームが終了したあと送信される。
+
+例：
+
+#### end_place
+場が終了したあと送信される。
+
+例：
 
 
