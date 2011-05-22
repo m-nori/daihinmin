@@ -129,7 +129,27 @@ AIとの通信は`WebSocket`と`HTTP-API`を使用する。
 
 1. start_place
   * 場の開始時に送信される。
-     '{"place":{"created_at":"2011-05-19T10:34:49Z","game_count":3,"id":26,"title":"Place2","updated_at":"2011-05-19T10:34:49Z"},"operation":"start_place","place":26}'
+
+    `sample:`{"place":{"created_at":"2011-05-19T10:34:49Z","game_count":3,"id":26,"title":"Place2","updated_at":"2011-05-19T10:34:49Z"},"operation":"start_place","place":26}
+
 2. start_game
+  * ゲームの開始時に送信される。
+  * `sample:`
+3. start_turn
+  * ターンの開始時に送信される。
+  * `sample:`
+4. end_player
+  * ゲームの開始時に送信される。
+  * `sample:`
+5. end_turn
+  * ゲームの開始時に送信される。
+  * `sample:`
+6. end_game
+  * ゲームの開始時に送信される。
+  * `sample:`
+7. end_place
+  * ゲームの開始時に送信される。
+  * `sample:`
+
 
 
