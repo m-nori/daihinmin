@@ -120,52 +120,157 @@ AIとの通信は`WebSocket`と`HTTP-API`を使用する。
 ゲームの進行状況に合わせてサーバ側から送信される。
 データはJSON形式となり、すべてのデータに以下の情報が含まれる。
 
-* place
+* `place`
   * 場のID。自分の参加している場以外の情報も送信されてくるため、自分の場かどうかの判断をしてから処理する必要がある。
-* operation
+* `operation`
   * 行われたオペレーション。処理の判定に使用する。
 
 #### start_place
 場の開始時に送信される。
 
+* `place`
+  * 場の情報。
+
 例：
 
-    {"place":{"created_at":"2011-05-19T10:34:49Z","game_count":3,"id":26,"title":"Place2","updated_at":"2011-05-19T10:34:49Z"},"operation":"start_place","place":26}
+    {"place":{
+      "created_at":"2011-05-19T10:34:49Z",
+      "game_count":3,
+      "id":26,
+      "title":"Place2",
+      "updated_at":"2011-05-19T10:34:49Z"
+    },
+    "operation":"start_place",
+    "place":26}
 
 #### start_game
 ゲームの開始時に送信される。
 
+* `game`
+  * ゲームの情報。
+
 例：
 
-    {"game":{"created_at":"2011-05-21T01:21:50Z","id":269,"no":1,"place_id":26,"place_info":"Nomal","status":0,"updated_at":"2011-05-21T01:21:50Z"},"operation":"start_game","place":26}
+    {"game":{
+      "created_at":"2011-05-21T01:21:50Z",
+      "id":269,"no":1,
+      "place_id":26,
+      "place_info":"Nomal",
+      "status":0,
+      "updated_at":"2011-05-21T01:21:50Z"
+    },
+    "operation":"start_game",
+    "place":26}
 
 
 #### start_turn
 ターンの開始時に送信される。
 
+* `player`
+  * ターンの回ってきたプレイヤーの名前。
+* `place_cards`
+  * 現在場に置かれているカード。配列になっており、カードがない場合は空の配列となる。
+*  `place_info`
+  * 場の情報。"Nomal"の場合通常、"Revolution"の場合革命中。
+
 例：
 
-    {"player":"User3","place_cards":[],"place_info":"Nomal","operation":"start_turn","place":26}
+    {"player":"User3",
+    "place_cards":[
+      {"card":
+        {"created_at":"2011-04-20T13:32:09Z",
+        "id":34,
+        "joker":false,
+        "mark":3,
+        "number":8,
+        "updated_at":"2011-04-20T13:32:09Z"}
+      },
+      {"card":
+        {"created_at":"2011-04-20T13:32:09Z",
+        "id":47,
+        "joker":false,
+        "mark":4,
+        "number":8,
+        "updated_at":"2011-04-20T13:32:09Z"}
+      }
+    ],
+    "place_info":"Nomal",
+    "operation":"start_turn",
+    "place":26}
 
 #### end_player
 プレイヤーが上がった場合、又はミスした場合に送信される。
 
 例：
 
+    {"player":"User5",
+    "rank":{
+      "rank":{"created_at":null,
+      "game_id":269,
+      "player_id":15,
+      "rank":1,
+      "updated_at":null}
+    },
+    "operation":"end_player",
+    "place":26}
+
 #### end_turn
 ターンが終了したあと送信される。
 
 例：
-    {"player":"User3","turn_cards":[{"card":{"created_at":"2011-04-20T13:32:09Z","id":34,"joker":false,"mark":3,"number":8,"updated_at":"2011-04-20T13:32:09Z"}},{"card":{"created_at":"2011-04-20T13:32:09Z","id":47,"joker":false,"mark":4,"number":8,"updated_at":"2011-04-20T13:32:09Z"}}],"reset_place":true,"operation":"end_turn","place":26}
+
+    {"player":"User3",
+    "turn_cards":[
+      {"card":
+        {"created_at":"2011-04-20T13:32:09Z",
+        "id":34,
+        "joker":false,
+        "mark":3,
+        "number":8,
+        "updated_at":"2011-04-20T13:32:09Z"}
+      },
+      {"card":
+        {"created_at":"2011-04-20T13:32:09Z",
+        "id":47,
+        "joker":false,
+        "mark":4,
+        "number":8,
+        "updated_at":"2011-04-20T13:32:09Z"}
+      }
+    ],
+    "reset_place":true,
+    "operation":"end_turn",
+    "place":26}
 
 #### end_game
 ゲームが終了したあと送信される。
 
 例：
 
+    {"game":{
+      "created_at":"2011-05-21T01:22:15Z",
+      "id":270,
+      "no":2,
+      "place_id":26,
+      "place_info":"Revolution",
+      "status":1,
+      "updated_at":"2011-05-21T01:22:39Z"
+    },
+    "operation":"end_game",
+    "place":26}
+
 #### end_place
 場が終了したあと送信される。
 
 例：
 
+    {"place":{
+      "created_at":"2011-05-19T10:34:49Z",
+      "game_count":3,
+      "id":26,
+      "title":"Place2",
+      "updated_at":"2011-05-19T10:34:49Z"
+    },
+    "operation":"end_place",
+    "place":26}
 
