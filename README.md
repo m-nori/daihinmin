@@ -110,5 +110,7 @@
 
 ### モデル構成
 
-<img src='doc/model.jpg' alt='モデルイメージ'>
+<img src='https://github.com/m-nori/daihinmin/blob/master/doc/model.jpg' alt='モデルイメージ'>
+
+
 
