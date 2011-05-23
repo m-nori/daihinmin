@@ -3,24 +3,59 @@
 ## <a name="mokuji">目次</a>
 
 * <a href="#gaiyou">概要</a>
+* <a href="#kinou">機能一覧</a>
+  * <a href="#kinou-1">全体管理</a>
+  * <a href="#kinou-2">ゲームの管理</a>
+  * <a href="#kinou-3">画面</a>
+* <a href="#yougo">用語の定義</a>
+* <a href="#rule">ルール</a>
+  * <a href="#rule-1">基本ルール</a>
+  * <a href="#rule-2">採用ルール</a>
+  * <a href="#rule-3">不採用ルール</a>
+* <a href="#architecture">アーキテクチャ</a>
+  * <a href="#architecture-1">システム構成</a>
+  * <a href="#architecture-2">モデル構成</a>
+  * <a href="#architecture-3">通信方式</a>
+* <a href="#websocket">WebScoketのデータ仕様</a>
+  * <a href="#websocket-1">共通情報</a>
+  * <a href="#websocket-2">各オペレーションのJSON</a>
+    * <a href="#websocket-2-1">start_place</a>
+    * <a href="#websocket-2-2">start_game</a>
+    * <a href="#websocket-2-3">start_turn</a>
+    * <a href="#websocket-2-4">end_player</a>
+    * <a href="#websocket-2-5">end_turn</a>
+    * <a href="#websocket-2-6">end_game</a>
+    * <a href="#websocket-2-7">end_place</a>
+* <a href="#api">プレイヤー用APIの仕様</a>
+  * <a href="#api-1">ログイン</a>
+    * <a href="#api-1-1">http://#{サーバ}/login</a>
+  * <a href="#api-2">情報取得</a>
+    * <a href="#api-2-1">http://#{サーバ}/get_hand.(json or xml)</a>
+    * <a href="#api-2-2">http://#{サーバ}/get_place_info.(json or xml)</a>
+  * <a href="#api-2">情報送信</a>
+    * <a href="#api-2-1">http://#{サーバ}/post_cards</a>
+* <a href="#flow">ゲームの進行</a>
+  * <a href="#flow-1">フロー</a>
+* <a href="#sample">AIの実装方法</a>
+  * <a href="#sample-1">開発言語</a>
+  * <a href="#sample-2">サンプル</a>
+* <a href="#todo">TODO</a>
 
 ## <a name="gaiyou">概要</a>
 
 本プログラムは大富豪大貧民のAIを動作させるためのプラットフォームとなっている。  
 ルールに基づいて作成されたAIプログラムがゲームを行うための機能を提供する。
 
-<div style="text-align:right;"><a href="#mokuji">目次へ</a></div>
+## <a name="kinou">機能一覧</a>
 
-## 機能一覧
-
-### 全体管理
+### <a name="kinou-1">全体管理</a>
 
 * 参加ユーザの追加、削除 
 * ゲームを実行するための場の作成
 * 場とユーザの結びつけ
 * ゲームの進行管理
 
-### ゲームの管理
+### <a name="kinou-2">ゲームの管理</a>
 
 * 手札の配布
 * 参加プレイヤーへの状況通知
@@ -29,14 +64,14 @@
 * 場に出したカードが出すことが可能だったかどうかの判定
 * ゲームごとの順位管理
 
-### 画面
+### <a name="kinou-3">画面</a>
 
 * 各種管理用画面
 * ゲーム進行画面
 * ゲーム結果表示画面
 * 手動プレイ用画面
 
-## 用語の定義
+## <a name="yougo">用語の定義</a>
 
 <table>
   <tr>
@@ -65,11 +100,11 @@
   </tr>
 </table>
 
-## ルール
+## <a name="rule">ルール</a>
 
 ルールはシンプルにすることによりAI作成の難易度は下げている。
 
-### 基本ルール
+### <a name="rule-1">基本ルール</a>
 
 * 1Placeにつき50ゲーム行う。
 * ゲームは5ユーザで対戦を行う。
@@ -80,24 +115,25 @@
 * 場に出せないカードを出したらその時点で負け。
 * 手札を一定時間以内に出せなかった場合は負け。
 
-### 採用ルール
+### <a name="rule-2">採用ルール</a>
 * 初回はハート3スタート
 * 2回目以降は大貧民スタート（並び順は変更しない）
 * 階段（3枚以上の場合のみ）
 * 8切り
 * 革命あり（ペアで4枚以上であればジョーカーを含んでいてもOK）
+* 革命返し（革命条件を満たしている場でも、偶数回カードが出されている場合は革命返しとみなす。）
 * ジョーカーor最強カード上がり禁止（行った場合はミスとみなす）
 
-### 不採用ルール
+### <a name="rule-3">不採用ルール</a>
 * 都落ち
 * イレブンバック
 * ジョーカーに対するスペード3返し
 * 階段革命
 * 縛り
 
-## アーキテクチャ
+## <a name="architecture">アーキテクチャ</a>
 
-### 構成
+### <a name="architecture-1">システム構成</a>
 
 * 開発言語
    * Ruby、JavaScript
@@ -108,11 +144,11 @@
 * 対象ブラウザ
   * GoogleChrome、FireFox4
 
-### モデル構成
+### <a name="architecture-2">モデル構成</a>
 
 ![モデルイメージ](/m-nori/daihinmin/blob/master/doc/model.jpg?raw=true "モデルイメージ")
 
-### 通信方式
+### <a name="architecture-3">通信方式</a>
 
 AIとの通信は`WebSocket`と`プレイヤー用API`を使用する。
 
@@ -125,12 +161,12 @@ AIとの通信は`WebSocket`と`プレイヤー用API`を使用する。
   * 手札の取得や、場にカードを出す為に使用するHTTP通信のAPI。
     プレイヤー毎に個別に処理する必要が有るため、使用するためにはユーザ認証を行ってから仕様する必要がある。
 
-## WebScoketのデータ仕様
+## <a name="websocket">WebScoketのデータ仕様</a>
 
 ゲームの進行状況に合わせてサーバ側から送信される。  
 データはJSON形式となり、すべてのデータに以下の情報が含まれる。
 
-### 共通情報
+### <a name="websocket-1">共通情報</a>
 
 * `place`
   * 場のID。自分の参加している場以外の情報も送信されてくるため、自分の場かどうかの判断をしてから処理する必要がある。
@@ -141,9 +177,9 @@ AIとの通信は`WebSocket`と`プレイヤー用API`を使用する。
   2. mark:カードのマーク。1〜4でどれが何かは決めていない。
   3. number:カードの数字。1〜13。
 
-### 各オペレーションのJSON
+### <a name="websocket-2">各オペレーションのJSON</a>
 
-#### start_place
+#### <a name="websocket-2-1">start_place</a>
 場の開始時に送信される。
 
 * `place`
@@ -162,7 +198,7 @@ AIとの通信は`WebSocket`と`プレイヤー用API`を使用する。
 "place":26}
 ```
 
-#### start_game
+#### <a name="websocket-2-2">start_game</a>
 ゲームの開始時に送信される。
 
 * `game`
@@ -182,7 +218,7 @@ AIとの通信は`WebSocket`と`プレイヤー用API`を使用する。
 "place":26}
 ```
 
-#### start_turn
+#### <a name="websocket-2-3">start_turn</a>
 ターンの開始時に送信される。
 
 * `player`
@@ -216,7 +252,7 @@ AIとの通信は`WebSocket`と`プレイヤー用API`を使用する。
 "place":26}
 ```
 
-#### end_player
+#### <a name="websocket-2-4">end_player</a>
 プレイヤーが上がった場合、又はミスした場合に送信される。
 
 * `player`
@@ -238,7 +274,7 @@ AIとの通信は`WebSocket`と`プレイヤー用API`を使用する。
 "place":26}
 ```
 
-#### end_turn
+#### <a name="websocket-2-5">end_turn</a>
 ターンが終了したあと送信される。
 
 * `player`
@@ -272,7 +308,7 @@ AIとの通信は`WebSocket`と`プレイヤー用API`を使用する。
 "place":26}
 ```
 
-#### end_game
+#### <a name="websocket-2-6">end_game</a>
 ゲームが終了したあと送信される。
 
 * `game`
@@ -293,7 +329,7 @@ AIとの通信は`WebSocket`と`プレイヤー用API`を使用する。
 "place":26}
 ```
 
-#### end_place
+#### <a name="websocket-2-7">end_place</a>
 場が終了したあと送信される。
 
 * `place`
@@ -312,16 +348,17 @@ AIとの通信は`WebSocket`と`プレイヤー用API`を使用する。
 "place":26}
 ```
 
-## プレイヤー用APIの仕様
+## <a name="api">プレイヤー用APIの仕様</a>
 プレイヤーが自分からアクセスすることで使用することが出来るHTTPのAPI。
 
-### ログイン
+### <a name="api-1">ログイン</a>
 APIを使用するためにはこのURLにアクセスしてログインを行う必要がある。
 
 現時点ではログイン情報をCookieに保存するため、Cookie保存を行える言語で実装する必要がある。
 
-#### http://#{サーバ}/login
-ユーザの認証を行う。
+#### <a name="api-1-1">http://#{サーバ}/login</a>
+
+ユーザの認証を行う。  
 クエリーパラメータは以下のとおり。
 
 * `name`
@@ -331,14 +368,14 @@ APIを使用するためにはこのURLにアクセスしてログインを行�
 * `place_id`
   * 場のID
 
-### 受信
-データの受信はJSONとXMLにて行える。（JSON推奨）
+### <a name="api-2">情報取得</a>
+情報取得はJSONとXMLにて行える。（JSON推奨）
 
 URLに".json"を付与した場合JSON、".xml"を付与した場合XMLとなる。
 
 HTTPメソッドは`get`。
 
-#### http://#{サーバ}/get_hand.(json or xml)
+#### <a name="api-2-1">http://#{サーバ}/get_hand.(json or xml)</a>
 手札の取得を行う。
 
 * `cards`
@@ -388,7 +425,7 @@ HTTPメソッドは`get`。
 </cards>
 ```
 
-#### http://#{サーバ}/get_place_info.(json or xml)
+#### <a name="api-2-2">http://#{サーバ}/get_place_info.(json or xml)</a>
 場の情報を取得を行う。
 
 * `game_count`
@@ -444,13 +481,13 @@ HTTPメソッドは`get`。
 </hash>
 ```
 
-### 送信
+### <a name="api-3">情報送信</a>
 データの送信フォーマットは未定。（現在はクエリーパラメータを使用）
 
 HTTPメソッドは`post`。
 
-#### http://#{サーバ}/post_cards
-手札を場に出す。
+#### <a name="api-3-1">http://#{サーバ}/post_cards</a>
+手札を場に出す。  
 クエリーパラメータは以下のとおり。
 
 * card_0 〜 5
@@ -466,13 +503,13 @@ HTTPメソッドは`post`。
     card_0 => "3-3"
     card_0 => "joker"
 
-## ゲームの進行
+## <a name="flow">ゲームの進行</a>
 ゲームの進行は`ゲーム進行画面`によって行われる。  
 start_turn以外のタイミングでゲーム進行画面がサーバにnext_turn通知を行うことで次の処理へと遷移する。  
 start_turnの次のみプレイヤーが場にカードを出すことで次の処理へと遷移する。（ただしタイムアウトした場合は強制的に次の処理へ進む）  
 これはゲームの進行を画面から確認できるようにするためのものである。
 
-### フロー
+### <a name="flow-1">フロー</a>
 
 <table>
   <tr>
@@ -566,8 +603,12 @@ start_turnの次のみプレイヤーが場にカードを出すことで次の�
 * No.6〜9までの処理をGameが終了するまで実行する。
 * No.8はNo.7の処理にてプレイヤーが終了した場合のみ発生する。
 
-## AIの実装方法
-AIを実装するためには以下機能保持している言語で実装する必要がある。
+## <a name="sample">AIの実装方法</a>
+AIは通信ルールに従って実装を行ってあれば言語・プラットフォームに依存しない。  
+また、本ドキュメントにより公開されていないAPIを使用した場合は失格とする。
+
+### <a name="sample-1">開発言語</a>
+AIを実装する言語は以下の機能を実装できる必要がある。
 
 1. WebSocketの受信
   * サーバからの通知を受信するために必要。
@@ -580,7 +621,9 @@ AIを実装するためには以下機能保持している言語で実装する
 4. スレッド処理
   * サーバからの通知は非同期で行われるため、通知に対する処理は別スレッドで処理することが望ましい。
 
-### サンプル
+ひとつの言語で全ての機能を持っていなくても、JavaScriptでWebSocketを受信し、JavaでAPI処理やスレッド処理を行うといった組み合わせでも問題ない。
+
+### <a name="sample-2">サンプル</a>
 
 WebSocketの受信：
 
@@ -723,9 +766,10 @@ EM.run do
 end
 ```
 
-## TODO
+## <a name="todo">TODO</a>
 
 * ゲーム結果表示画面作成
 * 手動プレイ用画面作成
 * サンプルに説明入れる…
-* プレイヤー用APIで各プレイヤーのランクを取得できるようにして欲しいです by kannos
+* プレイヤー用APIで各プレイヤーのランクを取得できるようする
+* プレイヤー用APIで初期手札（交換前）を取得できるようにする
