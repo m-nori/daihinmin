@@ -114,7 +114,7 @@
 
 AIとの通信は`WebSocket`と`プレイヤー用API`を使用する。
 
-[通信イメージ](https://github.com/m-nori/daihinmin/blob/master/doc/image.jpg "通信イメージ")
+![通信イメージ](/m-nori/daihinmin/blob/master/doc/image.jpg?raw=true "通信イメージ")
 
 * WebSocket
   * 全プレイヤーに共通的に提供できる情報を送信する為に使用する。
