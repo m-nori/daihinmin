@@ -6,7 +6,7 @@
 
 ## <a name="gaiyou">概要</a>
 
-本プログラムは大富豪大貧民のAIを動作させるためのプラットフォームとなっている。
+本プログラムは大富豪大貧民のAIを動作させるためのプラットフォームとなっている。  
 ルールに基づいて作成されたAIプログラムがゲームを行うための機能を提供する。
 
 ## 機能一覧
@@ -155,8 +155,7 @@ AIとの通信は`WebSocket`と`プレイヤー用API`を使用する。
   "game_count":3,
   "id":26,
   "title":"Place2",
-  "updated_at":"2011-05-19T10:34:49Z"
-},
+  "updated_at":"2011-05-19T10:34:49Z"},
 "operation":"start_place",
 "place":26}
 ```
@@ -169,17 +168,17 @@ AIとの通信は`WebSocket`と`プレイヤー用API`を使用する。
 
 例：
 
-    {"game":{
-      "created_at":"2011-05-21T01:21:50Z",
-      "id":269,"no":1,
-      "place_id":26,
-      "place_info":"Nomal",
-      "status":0,
-      "updated_at":"2011-05-21T01:21:50Z"
-    },
-    "operation":"start_game",
-    "place":26}
-
+``` javascript
+{"game":{
+  "created_at":"2011-05-21T01:21:50Z",
+  "id":269,"no":1,
+  "place_id":26,
+  "place_info":"Nomal",
+  "status":0,
+  "updated_at":"2011-05-21T01:21:50Z"},
+"operation":"start_game",
+"place":26}
+```
 
 #### start_turn
 ターンの開始時に送信される。
@@ -193,28 +192,27 @@ AIとの通信は`WebSocket`と`プレイヤー用API`を使用する。
 
 例：
 
-    {"player":"User3",
-    "place_cards":[
-      {"card":
-        {"created_at":"2011-04-20T13:32:09Z",
-        "id":34,
-        "joker":false,
-        "mark":3,
-        "number":8,
-        "updated_at":"2011-04-20T13:32:09Z"}
-      },
-      {"card":
-        {"created_at":"2011-04-20T13:32:09Z",
-        "id":47,
-        "joker":false,
-        "mark":4,
-        "number":8,
-        "updated_at":"2011-04-20T13:32:09Z"}
-      }
-    ],
-    "place_info":"Nomal",
-    "operation":"start_turn",
-    "place":26}
+``` javascript
+{"player":"User3",
+"place_cards":[
+  {"card":
+    {"created_at":"2011-04-20T13:32:09Z",
+    "id":34,
+    "joker":false,
+    "mark":3,
+    "number":8,
+    "updated_at":"2011-04-20T13:32:09Z"}},
+  {"card":
+    {"created_at":"2011-04-20T13:32:09Z",
+    "id":47,
+    "joker":false,
+    "mark":4,
+    "number":8,
+    "updated_at":"2011-04-20T13:32:09Z"}}],
+"place_info":"Nomal",
+"operation":"start_turn",
+"place":26}
+```
 
 #### end_player
 プレイヤーが上がった場合、又はミスした場合に送信される。
@@ -226,16 +224,17 @@ AIとの通信は`WebSocket`と`プレイヤー用API`を使用する。
 
 例：
 
-    {"player":"User5",
-    "rank":{
-      "rank":{"created_at":null,
-      "game_id":269,
-      "player_id":15,
-      "rank":1,
-      "updated_at":null}
-    },
-    "operation":"end_player",
-    "place":26}
+``` javascript
+{"player":"User5",
+"rank":{
+  "rank":{"created_at":null,
+  "game_id":269,
+  "player_id":15,
+  "rank":1,
+  "updated_at":null}},
+"operation":"end_player",
+"place":26}
+```
 
 #### end_turn
 ターンが終了したあと送信される。
@@ -249,28 +248,27 @@ AIとの通信は`WebSocket`と`プレイヤー用API`を使用する。
 
 例：
 
-    {"player":"User3",
-    "turn_cards":[
-      {"card":
-        {"created_at":"2011-04-20T13:32:09Z",
-        "id":34,
-        "joker":false,
-        "mark":3,
-        "number":8,
-        "updated_at":"2011-04-20T13:32:09Z"}
-      },
-      {"card":
-        {"created_at":"2011-04-20T13:32:09Z",
-        "id":47,
-        "joker":false,
-        "mark":4,
-        "number":8,
-        "updated_at":"2011-04-20T13:32:09Z"}
-      }
-    ],
-    "reset_place":true,
-    "operation":"end_turn",
-    "place":26}
+``` javascript
+{"player":"User3",
+"turn_cards":[
+  {"card":
+    {"created_at":"2011-04-20T13:32:09Z",
+    "id":34,
+    "joker":false,
+    "mark":3,
+    "number":8,
+    "updated_at":"2011-04-20T13:32:09Z"}},
+  {"card":
+    {"created_at":"2011-04-20T13:32:09Z",
+    "id":47,
+    "joker":false,
+    "mark":4,
+    "number":8,
+    "updated_at":"2011-04-20T13:32:09Z"}}],
+"reset_place":true,
+"operation":"end_turn",
+"place":26}
+```
 
 #### end_game
 ゲームが終了したあと送信される。
@@ -280,17 +278,18 @@ AIとの通信は`WebSocket`と`プレイヤー用API`を使用する。
 
 例：
 
-    {"game":{
-      "created_at":"2011-05-21T01:22:15Z",
-      "id":270,
-      "no":2,
-      "place_id":26,
-      "place_info":"Revolution",
-      "status":1,
-      "updated_at":"2011-05-21T01:22:39Z"
-    },
-    "operation":"end_game",
-    "place":26}
+``` javascript
+{"game":{
+  "created_at":"2011-05-21T01:22:15Z",
+  "id":270,
+  "no":2,
+  "place_id":26,
+  "place_info":"Revolution",
+  "status":1,
+  "updated_at":"2011-05-21T01:22:39Z"},
+"operation":"end_game",
+"place":26}
+```
 
 #### end_place
 場が終了したあと送信される。
@@ -300,15 +299,16 @@ AIとの通信は`WebSocket`と`プレイヤー用API`を使用する。
 
 例：
 
-    {"place":{
-      "created_at":"2011-05-19T10:34:49Z",
-      "game_count":3,
-      "id":26,
-      "title":"Place2",
-      "updated_at":"2011-05-19T10:34:49Z"
-    },
-    "operation":"end_place",
-    "place":26}
+``` javascript
+{"place":{
+  "created_at":"2011-05-19T10:34:49Z",
+  "game_count":3,
+  "id":26,
+  "title":"Place2",
+  "updated_at":"2011-05-19T10:34:49Z"},
+"operation":"end_place",
+"place":26}
+```
 
 ## プレイヤー用APIの仕様
 プレイヤーが自分からアクセスすることで使用することが出来るHTTPのAPI。
@@ -346,12 +346,14 @@ HTTPメソッドは`get`。
 
 例：JSON
 
-    [
-      {"card":{"id":20,"joker":false,"mark":2,"number":7}},
-      {"card":{"id":19,"joker":false,"mark":2,"number":6}},
-      {"card":{"id":6,"joker":false,"mark":1,"number":6}},
-      {"card":{"id":22,"joker":false,"mark":2,"number":9}}
-    ]
+``` javascript
+[
+  {"card":{"id":20,"joker":false,"mark":2,"number":7}},
+  {"card":{"id":19,"joker":false,"mark":2,"number":6}},
+  {"card":{"id":6,"joker":false,"mark":1,"number":6}},
+  {"card":{"id":22,"joker":false,"mark":2,"number":9}}
+]
+```
 
 例：XML
 
@@ -398,44 +400,47 @@ HTTPメソッドは`get`。
 
 例：JSON
 
-    {"game_count":10,
-    "player_count":5,
-    "player_infos":[
-      {"name":"User1","has_card":4},
-      {"name":"User2","has_card":1},
-      {"name":"User3","has_card":6},
-      {"name":"User4","has_card":7},
-      {"name":"User5","has_card":4}
-    ]}
+``` javascript
+{"game_count":10,
+"player_count":5,
+"player_infos":[
+  {"name":"User1","has_card":4},
+  {"name":"User2","has_card":1},
+  {"name":"User3","has_card":6},
+  {"name":"User4","has_card":7},
+  {"name":"User5","has_card":4}]}
+```
 
 例：XML
 
-    <hash>
-      <game-count type="integer">10</game-count>
-      <player-count type="integer">5</player-count>
-      <player-infos type="array">
-        <player-info>
-          <name>User1</name>
-          <has-card type="integer">4</has-card>
-        </player-info>
-        <player-info>
-          <name>User2</name>
-          <has-card type="integer">1</has-card>
-        </player-info>
-        <player-info>
-          <name>User3</name>
-          <has-card type="integer">6</has-card>
-        </player-info>
-        <player-info>
-          <name>User4</name>
-          <has-card type="integer">7</has-card>
-        </player-info>
-        <player-info>
-          <name>User5</name>
-          <has-card type="integer">4</has-card>
-        </player-info>
-      </player-infos>
-    </hash>
+``` xml
+<hash>
+  <game-count type="integer">10</game-count>
+  <player-count type="integer">5</player-count>
+  <player-infos type="array">
+    <player-info>
+      <name>User1</name>
+      <has-card type="integer">4</has-card>
+    </player-info>
+    <player-info>
+      <name>User2</name>
+      <has-card type="integer">1</has-card>
+    </player-info>
+    <player-info>
+      <name>User3</name>
+      <has-card type="integer">6</has-card>
+    </player-info>
+    <player-info>
+      <name>User4</name>
+      <has-card type="integer">7</has-card>
+    </player-info>
+    <player-info>
+      <name>User5</name>
+      <has-card type="integer">4</has-card>
+    </player-info>
+  </player-infos>
+</hash>
+```
 
 ### 送信
 データの送信フォーマットは未定。（現在はクエリーパラメータを使用）
