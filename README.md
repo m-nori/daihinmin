@@ -633,10 +633,10 @@ WebSocketの受信はJavaScript、その他の処理はJava等の使い分けで
 ### <a name="sample-2">サンプル</a>
 
 #### <a name="sample-2-1">WebSocketの受信</a>
-[Wikipedia](http://ja.wikipedia.org/wiki/WebSocket)等に仕様は記載されている。  
+WebSocket自体の仕様は[Wikipedia](http://ja.wikipedia.org/wiki/WebSocket)等に仕様は記載されている。  
 GoogleChromeやFireFox4であればブラウザ側で実装されているのでJavaScriptにて使用することができる。  
 シンプルな仕様なので他の言語でゼロから作るのもそれほど難しく無いが、JavaやPythonにはClient側のライブラリもいくつか存在しているのでそれを使っても問題ない。  
-HTTPSに対応させる必要は無い。  
+HTTPSは使用する予定が無いため、対応させる必要は無い。  
 サンプルのソースはRubyのEventMachineの上で動くように作った物。  
 Socketの中身は適当なところが多いが、問題なく動作する。
 
@@ -758,10 +758,10 @@ end
 
 #### <a name="sample-2-3">フロー制御</a>
 AIの根幹部分となるフロー制御部分。  
-WebSocketにて受信したのoperationに応じて処理を行う必要がある。  
+WebSocketにて受信したJSONのoperationに応じて処理を行う必要がある。  
 start_turnにて自分のターンであれば手札から出せるカードを探し、プレイヤーAPIを使ってカードを出すのが基本的な処理となる。  
 ゲーム開始時にプレイヤーAPIにて自分の手札を取得してからはできるだけWebSocketの情報を使って処理したほうが効率がいい。  
-気をつけるべき箇所としてWebSocketは非同期で送信されてくるので、WebSocketの受信をブロックしていると情報が欠ける可能性がある。  
+気をつけるべき箇所として、WebSocketは非同期で送信されてくるのでWebSocketの受信をブロックしていると情報が欠ける可能性がある。  
 そのためWebSocketの受信部分と処理の中身は別スレッドとしたほうがいい。  
 また、WebSocketからはJSON形式のデータが送られてくるはずであるが、JSONパーサでは空の文字列はパースエラーとなる。  
 空の文字列は送られてくる可能性があるため、パースエラーとなっても処理を継続できるようにしておく必要がある。
