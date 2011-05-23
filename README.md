@@ -149,15 +149,17 @@ AIとの通信は`WebSocket`と`プレイヤー用API`を使用する。
 
 例：
 
-    {"place":{
-      "created_at":"2011-05-19T10:34:49Z",
-      "game_count":3,
-      "id":26,
-      "title":"Place2",
-      "updated_at":"2011-05-19T10:34:49Z"
-    },
-    "operation":"start_place",
-    "place":26}
+``` javascript
+{"place":{
+  "created_at":"2011-05-19T10:34:49Z",
+  "game_count":3,
+  "id":26,
+  "title":"Place2",
+  "updated_at":"2011-05-19T10:34:49Z"
+},
+"operation":"start_place",
+"place":26}
+```
 
 #### start_game
 ゲームの開始時に送信される。
@@ -353,32 +355,34 @@ HTTPメソッドは`get`。
 
 例：XML
 
-    <cards type="array">
-      <card>
-        <id type="integer">20</id>
-        <joker type="boolean">false</joker>
-        <mark type="integer">2</mark>
-        <number type="integer">7</number>
-      </card>
-      <card>
-        <id type="integer">19</id>
-        <joker type="boolean">false</joker>
-        <mark type="integer">2</mark>
-        <number type="integer">6</number>
-      </card>
-      <card>
-        <id type="integer">6</id>
-        <joker type="boolean">false</joker>
-        <mark type="integer">1</mark>
-        <number type="integer">6</number>
-        </card>
-      <card>
-        <id type="integer">22</id>
-        <joker type="boolean">false</joker>
-        <mark type="integer">2</mark>
-        <number type="integer">9</number>
-      </card>
-    </cards>
+``` xml
+<cards type="array">
+  <card>
+    <id type="integer">20</id>
+    <joker type="boolean">false</joker>
+    <mark type="integer">2</mark>
+    <number type="integer">7</number>
+  </card>
+  <card>
+    <id type="integer">19</id>
+    <joker type="boolean">false</joker>
+    <mark type="integer">2</mark>
+    <number type="integer">6</number>
+  </card>
+  <card>
+    <id type="integer">6</id>
+    <joker type="boolean">false</joker>
+    <mark type="integer">1</mark>
+    <number type="integer">6</number>
+    </card>
+  <card>
+    <id type="integer">22</id>
+    <joker type="boolean">false</joker>
+    <mark type="integer">2</mark>
+    <number type="integer">9</number>
+  </card>
+</cards>
+```
 
 #### http://#{サーバ}/get_place_info.(json or xml)
 場の情報を取得を行う。
