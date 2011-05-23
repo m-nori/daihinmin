@@ -9,7 +9,7 @@
 本プログラムは大富豪大貧民のAIを動作させるためのプラットフォームとなっている。  
 ルールに基づいて作成されたAIプログラムがゲームを行うための機能を提供する。
 
-<p style="text-align:right:"><a href="#mokuji">目次へ</a></p>
+<p style="text-align:right;"><a href="#mokuji">目次へ</a></p>
 
 ## 機能一覧
 
