@@ -108,7 +108,7 @@
 
 ### モデル構成
 
-![モデルイメージ](/m-nori/daihinmin/blob/master/doc/model.jpg "モデルイメージ")
+![モデルイメージ](/m-nori/daihinmin/blob/master/doc/model.jpg?raw=true "モデルイメージ")
 
 ### 通信方式
 
