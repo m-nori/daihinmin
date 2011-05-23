@@ -1,4 +1,4 @@
-# 大富豪大貧民用サーバAP
+# 大富豪大貧民用サーバ
 
 ## <a name="mokuji">目次</a>
 
@@ -39,6 +39,9 @@
 * <a href="#sample">AIの実装方法</a>
   * <a href="#sample-1">開発言語</a>
   * <a href="#sample-2">サンプル</a>
+      * <a href="#sample-2-1">WebSocketの受信</a>
+      * <a href="#sample-2-2">プレイヤーAPIの使用</a>
+      * <a href="#sample-2-3">フロー制御</a>
 * <a href="#todo">TODO</a>
 
 ## <a name="gaiyou">概要</a>
@@ -150,9 +153,8 @@
 
 ### <a name="architecture-3">通信方式</a>
 
-AIとの通信は`WebSocket`と`プレイヤー用API`を使用する。
-
-![通信イメージ](/m-nori/daihinmin/blob/master/doc/image.jpg?raw=true "通信イメージ")
+サーバとAI間の通信は`WebSocket`と`プレイヤー用API`を使用する。  
+用途は以下のとおり。
 
 * WebSocket
   * 全プレイヤーに共通的に提供できる情報を送信する為に使用する。
@@ -160,6 +162,8 @@ AIとの通信は`WebSocket`と`プレイヤー用API`を使用する。
 * プレイヤー用API
   * 手札の取得や、場にカードを出す為に使用するHTTP通信のAPI。
     プレイヤー毎に個別に処理する必要が有るため、使用するためにはユーザ認証を行ってから仕様する必要がある。
+
+![通信イメージ](/m-nori/daihinmin/blob/master/doc/image.jpg?raw=true "通信イメージ")
 
 ## <a name="websocket">WebScoketのデータ仕様</a>
 
@@ -523,7 +527,7 @@ start_turnの次のみプレイヤーが場にカードを出すことで次の�
   </tr>
   <tr>
     <td>2</td>
-    <td>WebSocket:start_place</td>
+    <td>start_placeを送信する。</td>
     <td></td>
     <td></td>
   </tr>
@@ -535,7 +539,7 @@ start_turnの次のみプレイヤーが場にカードを出すことで次の�
   </tr>
   <tr>
     <td>4</td>
-    <td>WebSocket:start_game</td>
+    <td>start_gameを送信する。</td>
     <td></td>
     <td></td>
   </tr>
@@ -547,7 +551,7 @@ start_turnの次のみプレイヤーが場にカードを出すことで次の�
   </tr>
   <tr>
     <td>6</td>
-    <td>WebSocket:start_turn</td>
+    <td>start_turnを送信する。</td>
     <td></td>
     <td></td>
   </tr>
@@ -555,17 +559,17 @@ start_turnの次のみプレイヤーが場にカードを出すことで次の�
     <td>7</td>
     <td></td>
     <td></td>
-    <td>対象プレイヤーが場にカードを出す。</td>
+    <td>場にカードを出す。</td>
   </tr>
   <tr>
     <td>8</td>
-    <td>WebSocket:end_player</td>
+    <td>end_playerを送信する。</td>
     <td></td>
     <td></td>
   </tr>
   <tr>
     <td>9</td>
-    <td>WebSocket:end_turn</td>
+    <td>end_turnを送信する。</td>
     <td></td>
     <td></td>
   </tr>
@@ -577,37 +581,45 @@ start_turnの次のみプレイヤーが場にカードを出すことで次の�
   </tr>
   <tr>
     <td>11</td>
-    <td>WebSocket:end_game</td>
+    <td>end_playerを送信する。</td>
     <td></td>
     <td></td>
   </tr>
   <tr>
     <td>12</td>
+    <td>end_gameを送信する。</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>13</td>
     <td></td>
     <td>next_turn通知を行う。</td>
     <td></td>
   </tr>
   <tr>
-    <td>13</td>
-    <td>WebSocket:end_place</td>
+    <td>14</td>
+    <td>end_placeを送信する。</td>
     <td></td>
     <td></td>
   </tr>
   <tr>
 </table>
 
-* No.4〜12までの処理をGame回数分実行する。
+* No.4〜13までの処理をGame回数分実行する。
 * No.6〜9までの処理をGameが終了するまで実行する。
 * No.8はNo.7の処理にてプレイヤーが終了した場合のみ発生する。
+* No.11はプレイヤーが残り一人になった場合のみ発生する。
 
 ## <a name="sample">AIの実装方法</a>
 AIは通信ルールに従って実装を行ってあれば言語・プラットフォームに依存しない。  
 また、本ドキュメントにより公開されていないAPIを使用した場合は失格とする。
 
 ### <a name="sample-1">開発言語</a>
-AIを実装する言語は以下の機能を実装できる必要がある。
+AIを実装する言語は以下の機能を実装できる必要がある。  
+WebSocketの受信はJavaScript、その他の処理はJava等の使い分けでも問題ない。
 
-1. WebSocketの受信
+1. WebSocket受信
   * サーバからの通知を受信するために必要。
   * Socket通信ができる言語であれば実装可能
 2. HTTP通信
@@ -618,11 +630,15 @@ AIを実装する言語は以下の機能を実装できる必要がある。
 4. スレッド処理
   * サーバからの通知は非同期で行われるため、通知に対する処理は別スレッドで処理することが望ましい。
 
-ひとつの言語で全ての機能を持っていなくても、JavaScriptでWebSocketを受信し、JavaでAPI処理やスレッド処理を行うといった組み合わせでも問題ない。
-
 ### <a name="sample-2">サンプル</a>
 
-WebSocketの受信：
+#### <a name="sample-2-1">WebSocketの受信</a>
+[Wikipedia](http://ja.wikipedia.org/wiki/WebSocket)等に仕様は記載されている。  
+GoogleChromeやFireFox4であればブラウザ側で実装されているのでJavaScriptにて使用することができる。  
+シンプルな仕様なので他の言語でゼロから作るのもそれほど難しく無いが、JavaやPythonにはClient側のライブラリもいくつか存在しているのでそれを使っても問題ない。  
+HTTPSに対応させる必要は無い。  
+サンプルのソースはRubyのEventMachineの上で動くように作った物。  
+Socketの中身は適当なところが多いが、問題なく動作する。
 
 ``` ruby
 require "EventMachine"
@@ -686,7 +702,11 @@ class WebsocketClient < EventMachine::Connection
 end
 ```
 
-プレイヤーAPIの使用：
+#### <a name="sample-2-2">プレイヤーAPIの使用</a>
+プレイヤーAPIを使用するためにはまずログインを行い、そのクッキーを使用してアクセする必要がある。  
+そのためJavaではApatchのHttpClientライブラリ等を仕様する必要がある。  
+サンプルはRubyのMechanizeというライブラリを使っており、そこでクッキー管理やHTMLスクレイピングを行っている。  
+そのためloginやpost_cardsはformに対するsubmitだけで実行している。
 
 ``` ruby
 require 'Mechanize'
@@ -736,7 +756,15 @@ class PlayerAccsesor
 end
 ```
 
-フロー制御：
+#### <a name="sample-2-3">フロー制御</a>
+AIの根幹部分となるフロー制御部分。  
+WebSocketにて受信したのoperationに応じて処理を行う必要がある。  
+start_turnにて自分のターンであれば手札から出せるカードを探し、プレイヤーAPIを使ってカードを出すのが基本的な処理となる。  
+ゲーム開始時にプレイヤーAPIにて自分の手札を取得してからはできるだけWebSocketの情報を使って処理したほうが効率がいい。  
+気をつけるべき箇所としてWebSocketは非同期で送信されてくるので、WebSocketの受信をブロックしていると情報が欠ける可能性がある。  
+そのためWebSocketの受信部分と処理の中身は別スレッドとしたほうがいい。  
+また、WebSocketからはJSON形式のデータが送られてくるはずであるが、JSONパーサでは空の文字列はパースエラーとなる。  
+空の文字列は送られてくる可能性があるため、パースエラーとなっても処理を継続できるようにしておく必要がある。
 
 ``` ruby
 EM.run do
@@ -749,11 +777,12 @@ EM.run do
       next
     end
     next if json["place"] != place_id.to_i
+    case json["operation"]
     when "end_place"
       exit(0)
     when "start_turn"
       Thread.new do
-        # 手札を作る
+        # 出すカードを作る
         player_accsesor.post_cards(put_cards)
       end
     else
