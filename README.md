@@ -636,7 +636,7 @@ WebSocketの受信はJavaScript、その他の処理はJava等の使い分けで
 WebSocket自体の仕様は[Wikipedia](http://ja.wikipedia.org/wiki/WebSocket)等に仕様は記載されている。  
 GoogleChromeやFireFox4であればブラウザ側で実装されているのでJavaScriptにて使用することができる。  
 シンプルな仕様なので他の言語でゼロから作るのもそれほど難しく無いが、JavaやPythonにはClient側のライブラリもいくつか存在しているのでそれを使っても問題ない。  
-HTTPSは使用する予定が無いため、対応させる必要は無い。  
+SSL（wss://）は使用する予定が無いため、対応させる必要は無い。  
 サンプルのソースはRubyのEventMachineの上で動くように作った物。  
 Socketの中身は適当なところが多いが、問題なく動作する。
 
