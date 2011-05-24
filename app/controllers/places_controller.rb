@@ -24,7 +24,7 @@ class PlacesController < ApplicationController
   # GET /places/new.xml
   def new
     @place = Place.new
-    5.times do
+    DaihinminConst.get("place_player_count").times do
       @place.players.build
     end
 

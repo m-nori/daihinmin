@@ -1,5 +1,6 @@
 <script type="text/javascript">
   //<![CDATA[
+  dd.core.Option.ws_url = "ws://<%= DaihinminConst.get 'host_name' %>:<%= DaihinminConst.get 'websocket_port' %>";
   dd.place.ShowOption.place_id = <%= @place.id %>;
   dd.place.ShowOption.player_count = <%= @place.players.length %>;
   dd.place.ShowOption.start_url = "<%= start_place_path %>";

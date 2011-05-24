@@ -6,7 +6,9 @@ if(typeof(dd.core) == 'undefined') { dd.core = {}; }
    * @class Option
    */
   dd.core.Option = function() {};
-  dd.core.Option.ws_url = "ws://localhost:8081";
+  dd.core.Option.prototype = {
+    ws_url: null
+  };
 
   /**
    * @class Show
