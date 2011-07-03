@@ -192,7 +192,7 @@
 例：
 
 ``` javascript
-{"place":{
+{"place_info":{
   "created_at":"2011-05-19T10:34:49Z",
   "game_count":3,
   "id":26,
@@ -342,7 +342,7 @@
 例：
 
 ``` javascript
-{"place":{
+{"place_info":{
   "created_at":"2011-05-19T10:34:49Z",
   "game_count":3,
   "id":26,

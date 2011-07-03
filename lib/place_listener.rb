@@ -46,7 +46,7 @@ class PlaceListener
       end
       @game_count = 0
       init_game
-      send_websocket("start_place", @place.to_json)
+      send_websocket("start_place", @place.to_json.sub(/place/,"place_info"))
     end
 
     def next_turn
@@ -100,7 +100,7 @@ class PlaceListener
     private
     def end_place
       debug("end_place")
-      send_websocket("end_place", @place.to_json)
+      send_websocket("end_place", @place.to_json.sub(/place/,"place_info"))
     end
 
     def init_game
