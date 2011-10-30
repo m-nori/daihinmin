@@ -1,0 +1,81 @@
+<%= javascript_include_tag %w{ 
+  excanvas
+  jquery.jqplot
+  jqplot.dateAxisRenderer.min
+  jqplot.canvasTextRenderer.min
+  jqplot.canvasAxisTickRenderer.min
+  jqplot.categoryAxisRenderer.min
+  jqplot.barRenderer.min
+  place 
+  game_view
+} %>
+<p id="notice"><%= notice %></p>
+<form>
+  <fieldset>
+    <legend id="game_no">0</legend>
+    <dl>
+      <dt>
+        <span>Place Info:</span>
+        <span id="place_info"></span>
+      </dt>
+    </dl>
+    <dl>
+      <div class='place drop-shadow'>
+        <ul id='place_cards'>
+        </ul>
+      </div>
+    </dl>
+    <dl>
+      <div class='players'>
+        <ul id='players'>
+          <% @place.players.each do |player| %>
+            <li>
+              <div class="player drop-shadow lifted">
+                <div class='player_name'>
+                  <span>
+                    <%= User.find(player.user_id).name %>
+                  </span>
+                </div>
+                <div class='player_place_cards'>
+                  <span>init</span>
+                </div>
+                <div class='player_cards'>
+                  <ul/>
+                </div>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </dl>
+    <div id="graph"></div>
+  </fieldset>
+</form>
+<p>
+  <button type="submit" id="reverse">reverse</button>
+</p>
+<hr/>
+
+<%= link_to 'Back', places_path %>
+
+<script type="text/javascript">
+  //<![CDATA[
+  dd.core.Option.ws_url = "ws://<%= DaihinminConst.get 'host_name' %>:<%= DaihinminConst.get 'websocket_port' %>";
+  dd.place.ShowOption.place_id = <%= @place.id %>;
+  dd.place.ShowOption.player_count = <%= @place.players.length %>;
+  dd.place.ShowOption.info_url = "<%= info_place_path + ".json" %>";
+  dd.place.ShowOption.players_card_url = "<%= players_card_place_path + ".json" %>";
+  dd.place.ShowOption.graph_url = "<%= graph_place_path + ".json" %>";
+
+  $(document).ready(function(){
+    var show = new dd.place.GameView();
+
+    // websoket start
+    dd.core.WebSocket.start(show);
+
+    // set an action on the button
+    $("#reverse").click(show.reverse).attr('disabled', true);
+  });
+  //]]>
+</script>
+

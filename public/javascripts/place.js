@@ -33,19 +33,16 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
     start_url : null,
     next_turn_url : null,
     info_url : null,
-    players_card_url : null
+    players_card_url : null,
+    graph_url : null
   };
 
   /**
-   * @class Show
+   * @class Place
    */
-  dd.place.Show = (function() {
+  dd.place.Place = (function() {
     var Constr;
     var players = null;
-    var reverse_flg = false;
-    var start_flg = false;
-    var manual = true;
-    var interval = 0;
 
     // private methods
     var get_players = function() {
@@ -63,7 +60,11 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
       });
     };
 
-    var set_players_card = function () {
+    var set_place_info = function(place_info) {
+        $("#place_info").text(place_info);
+    };
+
+    var set_players_card = function (reverse_flg) {
       $.getJSON(dd.place.ShowOption.players_card_url, function(json){
         for(var i = 0;i < json.length;i++){
           var player = json[i].player;
@@ -150,6 +151,42 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
       $.put(dd.place.ShowOption.next_turn_url, {}, function() {});
     };
 
+    /**
+     * Constractor
+     */
+    Constr = function() {
+    };
+
+    Constr.prototype = {
+      get_players : get_players,
+      set_place : set_place,
+      set_place_info : set_place_info,
+      set_players_card : set_players_card,
+      set_player_cards : set_player_cards,
+      set_player_place_cards : set_player_place_cards,
+      reset_place_and_player : reset_place_and_player,
+      init_place_and_player : init_place_and_player,
+      set_place_cards : set_place_cards,
+      set_player : set_player,
+      un_set_player : un_set_player,
+      next_turn : next_turn
+    };
+
+    return Constr;
+  })();
+
+  /**
+   * @class Show
+   */
+  dd.place.Show = (function() {
+    var Constr;
+    var reverse_flg = false;
+    var start_flg = false;
+    var manual = true;
+    var interval = 0;
+    var place = new dd.place.Place();
+
+    // private methods
     var  interval_change_exec = function() {
       var val = $("#interval").val();
       if(val == "manual") {
@@ -160,7 +197,7 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
         interval = parseInt(val) * 1000;
         $("#manual").attr('disabled', true);
         if(start_flg && now) {
-          setTimeout(next_turn, interval);
+          setTimeout(place.next_turn, interval);
         }
       }
     };
@@ -169,7 +206,7 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
      * Constractor
      */
     Constr = function() {
-      get_players();
+      place.get_players();
     };
 
     // public methods
@@ -194,18 +231,18 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
         start_flg = true
         interval_change_exec();
         if(!manual) {
-          setTimeout(next_turn, 1500);
+          setTimeout(place.next_turn, 1500);
         } else {
           $("#manual").attr('disabled', false);
         }
       },
 
       start_game : function(json) {
-        init_place_and_player();
-        set_place();
-        set_players_card();
+        place.init_place_and_player();
+        place.set_place();
+        place.set_players_card(reverse_flg);
         if(!manual) {
-          setTimeout(next_turn, interval);
+          setTimeout(place.next_turn, 1500);
         } else {
           $("#manual").attr('disabled', false);
         }
@@ -213,15 +250,16 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
 
       end_game : function(json) {
         if(!manual) {
-          setTimeout(next_turn, interval);
+          setTimeout(place.next_turn, interval);
         } else {
           $("#manual").attr('disabled', false);
         }
       },
 
       start_turn : function(json) {
-        set_place();
-        set_player(json.player);
+        //place.set_place_cards(json.turn_cards);
+        place.set_place_info(json.place_info);
+        place.set_player(json.player);
       },
 
       end_turn : function(json) {
@@ -229,23 +267,24 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
         if(json.turn_cards.length == 0) {
           info = "PASS";
         } else {
-          set_place_cards(json.turn_cards);
+          console.debug(json.turn_cards);
+          place.set_place_cards(json.turn_cards);
         }
-        set_player_place_cards(json.player, info, json.turn_cards);
-        un_set_player(json.player);
-        set_players_card();
+        place.set_player_place_cards(json.player, info, json.turn_cards);
+        place.un_set_player(json.player);
+        place.set_players_card(reverse_flg);
         if(json.reset_place) {
           setTimeout(function() {
-            reset_place_and_player();
+            place.reset_place_and_player();
             if(!manual) {
-              setTimeout(next_turn, interval);
+              setTimeout(place.next_turn, interval);
             } else {
               $("#manual").attr('disabled', false);
             }
           },500);
         } else {
           if(!manual) {
-            setTimeout(next_turn, interval);
+            setTimeout(place.next_turn, interval);
           } else {
             $("#manual").attr('disabled', false);
           }
@@ -253,12 +292,12 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
       },
 
       end_player : function(json) {
-        set_player_place_cards(json.player, "RANK:" + json.rank.rank.rank, []);
+        place.set_player_place_cards(json.player, "RANK:" + json.rank.rank.rank, []);
       },
 
       next : function(json) {
         $("#manual").attr('disabled', true);
-        next_turn();
+        place.next_turn();
       },
 
       interval_change : function() {
@@ -267,7 +306,7 @@ if(typeof(dd.place) == 'undefined') { dd.place = {}; }
 
       reverse : function() {
         reverse_flg = !reverse_flg;
-        set_players_card();
+        place.set_players_card(reverse_flg);
       }
     };
 

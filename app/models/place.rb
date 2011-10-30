@@ -37,4 +37,30 @@ class Place < ActiveRecord::Base
     map[:player_infos] = list
     map
   end
+
+  def graph
+    max = players.length
+    map = {}
+    games.each do |game|
+      game.ranks.each do |rank|
+        total = map[rank.player_id] ? map[rank.player_id] : 0
+        total += max - rank.rank
+        map[rank.player_id] = total
+      end
+    end
+    p map
+    list = []
+    if map.length == 0
+      players.each do |p|
+        u = User.find(p.user_id)
+        list << [u.name, 0]
+      end
+    else
+      players.each do |p|
+        u = User.find(p.user_id)
+        list << [u.name, map[p.id]]
+      end
+    end
+    list
+  end
 end

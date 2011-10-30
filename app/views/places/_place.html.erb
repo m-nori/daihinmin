@@ -1,5 +1,6 @@
 <tr>
   <td><%= link_to place.title, place %></td>
+  <td><%= link_to 'Show', game_place_path(place) %></td>
   <td><%= link_to 'Edit', edit_place_path(place) %></td>
   <td><%= link_to 'Destroy', place, :confirm => 'Are you sure?', :method => :delete %></td>
 </tr>

@@ -1,3 +1,3 @@
-host_name: localhost
+host_name: 192.168.11.6
 websocket_port: 8081
 place_player_count: 5

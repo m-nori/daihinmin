@@ -25,7 +25,7 @@ class WebsocketClient < EventMachine::Connection
     request = "GET / HTTP/1.1\r\n"
 		request << "Upgrade: WebSocket\r\n"
 		request << "Connection: Upgrade\r\n"
-		request << "Host: 127.0.0.1\r\n"
+		request << "Host: 192.168.11.6\r\n"
 		request << "Origin: TODO\r\n"
     request << "\r\n"
     send_data request

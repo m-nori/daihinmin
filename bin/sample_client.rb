@@ -144,8 +144,7 @@ EM.run do
     when "start_turn"
       if json["player"] == user_name
         # place_info
-        revolution = false
-        revolution = true if json["place_info"] == "Revolutio"
+        revolution = json["place_info"] == "Revolutio"
         place_cards = json_cards_to_hash(json["place_cards"])
         # init
         put_cards = []

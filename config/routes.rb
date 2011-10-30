@@ -5,6 +5,8 @@ Daihinmin::Application.routes.draw do
     put 'next_turn', :on => :member
     get 'players_card', :on => :member
     get 'info', :on => :member
+    match 'game', :on => :member, :to => 'place_view#game'
+    match 'graph', :on => :member, :to => 'place_view#graph'
   end
   resources :operations, :only => [:index] do
     get 'get_hand', :on => :collection

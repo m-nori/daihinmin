@@ -171,3 +171,12 @@ button {
   -webkit-border-radius:50%; 
 }
 
+#graph {
+  width: 500px;  
+  height:200px;
+  margin-top:20px;
+  margin: 0 auto;  
+  margin-top:30px;
+  margin-bottom:30px;
+}
+

@@ -305,7 +305,7 @@ class PlaceListener
     def card_change
       debug("card_change")
       debug("last_ranks:#{@last_ranks}")
-      sleep INTERVAL
+      #sleep INTERVAL
       change(
         @game_players.find{|p| 
           p.id == @last_ranks[0].player_id},
